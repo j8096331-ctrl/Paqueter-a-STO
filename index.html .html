@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Paquetería Santo Tomás Hueyotlipan | ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #0f172a; }
+    .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+    @media print {
+      body * { visibility: hidden !important; }
+      #printContainer, #printContainer * { visibility: visible !important; }
+      #printContainer {
+        position: absolute !important; left: 0 !important; top: 0 !important;
+        width: 100% !important; margin: 0 !important; padding: 0 !important;
+        background: white !important; box-shadow: none !important;
+      }
+      .no-print { display: none !important; }
+    }
+    .step-panel { transition: all 0.2s ease-in-out; }
+    .input-focus-ring:focus { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOAST -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 no-print"></div>
+
+  <!-- HEADER -->
+  <header class="bg-slate-950 text-white border-b border-slate-800 sticky top-0 z-40 shadow-lg no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-lg shadow">
+          <i class="fa-solid fa-boxes-packing"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block">Sistema de Notas y Envíos MX ➔ USA</span>
+          <h1 class="text-base md:text-lg font-black tracking-tight">Paquetería Santo Tomás Hueyotlipan</h1>
+        </div>
+      </div>
+
+      <nav class="flex flex-wrap items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <button onclick="App.switchView('captura')" id="nav-captura" class="px-3 py-2 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 bg-amber-500 text-slate-950">
+          <i class="fa-solid fa-file-pen"></i><span>Nueva Nota</span>
+        </button>
+        <button onclick="App.switchView('usa')" id="nav-usa" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-flag-usa"></i><span>Buscar EE. UU.</span>
+        </button>
+        <button onclick="App.switchView('clientes')" id="nav-clientes" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-users"></i><span>Clientes / Nuevo Viaje</span>
+        </button>
+        <button onclick="App.switchView('manifiesto')" id="nav-manifiesto" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-table-list"></i><span>Corte y Lista</span>
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-1.5">
+        <button onclick="App.exportDatabase()" title="Descargar Respaldo" class="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1">
+          <i class="fa-solid fa-download text-emerald-400"></i><span class="hidden sm:inline">Respaldar</span>
+        </button>
+        <label title="Cargar Respaldo" class="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer">
+          <i class="fa-solid fa-upload text-amber-400"></i><span class="hidden sm:inline">Importar</span>
+          <input type="file" accept=".json" class="hidden" onchange="App.importDatabase(event)">
+        </label>
+        <button onclick="App.clearAllDatabase()" title="Dejar todo en cero" class="bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800 px-2.5 py-2 rounded-lg text-xs font-semibold">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl w-full mx-auto px-4 py-5 flex-1 space-y-5 no-print">
+
+    <!-- KPIs EN CERO -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200 shadow-xs flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Notas Registradas</span>
+          <span id="kpi-total-envios" class="text-xl font-black text-slate-900 font-mono-code">0</span>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-box"></i></div>
+      </div>
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200 shadow-xs flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Kilos Totales</span>
+          <span id="kpi-peso-total" class="text-xl font-black text-slate-900 font-mono-code">0.0 kg</span>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div>
+      </div>
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200 shadow-xs flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Cobrado / Anticipos</span>
+          <span id="kpi-cobrado" class="text-xl font-black text-emerald-600 font-mono-code">$0.00</span>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-cash-register"></i></div>
+      </div>
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200 shadow-xs flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Por Cobrar EE. UU.</span>
+          <span id="kpi-pendiente" class="text-xl font-black text-rose-600 font-mono-code">$0.00</span>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         VISTA 1: CAPTURA DE NOTA PASO A PASO (FLUJO CON ENTER)
+         ===================================================== -->
+    <section id="view-captura" class="space-y-5">
+
+      <!-- Buscador rápido para cliente existente -->
+      <div class="bg-slate-900 text-white p-4 rounded-2xl shadow flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="bg-amber-500/20 text-amber-400 p-2.5 rounded-xl border border-amber-500/30">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-extrabold">¿Cliente ya registrado? Búscalo para "Nuevo Viaje"</h2>
+            <p class="text-xs text-slate-400">O llena el Paso 1 abajo presionando <strong>Enter ↵</strong> para avanzar de casilla en casilla.</p>
+          </div>
+        </div>
+        <div class="relative w-full md:w-96">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
+          <input type="text" id="quickSearchClientInput" oninput="App.handleQuickClientAutocomplete(this.value)" placeholder="Buscar cliente o familiar..." class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-amber-400">
+          <div id="quickSearchDropdown" class="hidden absolute left-0 right-0 mt-1 bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-200 max-h-64 overflow-y-auto z-50 divide-y divide-slate-100"></div>
+        </div>
+      </div>
+
+      <!-- Indicador de Pasos (Se puede cambiar con Enter o tocando el paso) -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <span id="formFolioDisplay" class="bg-slate-950 text-amber-400 font-mono-code font-black text-sm px-3 py-1.5 rounded-lg">FOLIO: STH-1001</span>
+            <span id="editingModeBadge" class="hidden bg-rose-600 text-white text-xs font-extrabold px-2.5 py-1 rounded-full">Editando Nota</span>
+            <span id="linkedClientBadge" class="hidden bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full"></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-bold text-slate-500">Viaje:</label>
+            <input type="text" id="formViaje" value="Viaje Actual" class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-bold w-36">
+            <button type="button" onclick="App.resetCaptureForm()" class="text-xs text-slate-500 hover:text-rose-600 font-bold px-2 py-1 border border-slate-200 rounded-lg">
+              <i class="fa-solid fa-rotate-left mr-1"></i>Limpiar
+            </button>
+          </div>
+        </div>
+
+        <!-- Pestañas de los 3 pasos de la nota -->
+        <div class="grid grid-cols-3 gap-2 my-4">
+          <button type="button" onclick="App.goToStep(1)" id="stepBtn1" class="py-2.5 px-3 rounded-xl font-extrabold text-xs md:text-sm flex items-center justify-center gap-2 bg-slate-900 text-amber-400 shadow">
+            <span class="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black flex items-center justify-center text-xs">1</span>
+            <span>Quién Envía y Recibe</span>
+          </button>
+          <button type="button" onclick="App.goToStep(2)" id="stepBtn2" class="py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-300 text-slate-700 font-black flex items-center justify-center text-xs">2</span>
+            <span>Anotar Contenido (Piezas, Bolsas, Cajas, Kg)</span>
+          </button>
+          <button type="button" onclick="App.goToStep(3)" id="stepBtn3" class="py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <span class="w-6 h-6 rounded-full bg-slate-300 text-slate-700 font-black flex items-center justify-center text-xs">3</span>
+            <span>Total y Guardar Nota</span>
+          </button>
+        </div>
+
+        <input type="hidden" id="editingShipmentId" value="">
+        <input type="hidden" id="selectedClientId" value="">
+
+        <!-- =================================================
+             PASO 1: NOMBRES Y TELÉFONOS (ENTER AVANZA AL SIGUIENTE)
+             ================================================= -->
+        <div id="stepPanel1" class="step-panel space-y-5 pt-2">
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 flex items-center gap-2">
+            <i class="fa-solid fa-keyboard text-amber-600 text-base"></i>
+            <span><strong>Tip rápido:</strong> Cuando termines de escribir un dato y presiones <strong>Enter (Intro)</strong> en el teclado, saltarás automáticamente al siguiente campo, y al terminar pasarás a la pantalla de anotar las cosas.</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Quien envía -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <h3 class="text-xs font-black uppercase text-emerald-700 flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                <i class="fa-solid fa-user"></i> 1. Quién Envía (México)
+              </h3>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nombre de Quien Envía *</label>
+                <input type="text" id="remNombre" data-next="remTel" placeholder="Escribe nombre y presiona Enter ↵" class="enter-nav input-focus-ring w-full border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-amber-500 bg-white">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Teléfono México *</label>
+                  <input type="tel" id="remTel" data-next="destNombre" placeholder="Ej. 222 123 4567" class="enter-nav input-focus-ring w-full border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-amber-500 bg-white">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Origen</label>
+                  <input type="text" id="remOrigen" value="Santo Tomás Hueyotlipan" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-white">
+                </div>
+              </div>
+            </div>
+
+            <!-- Quien recibe en EE. UU. -->
+            <div class="bg-blue-50/40 p-4 rounded-2xl border border-blue-200 space-y-3">
+              <div class="flex justify-between items-center border-b border-blue-200 pb-2">
+                <h3 class="text-xs font-black uppercase text-blue-800 flex items-center gap-1.5">
+                  <i class="fa-solid fa-flag-usa"></i> 2. Quién Recibe (Estados Unidos)
+                </h3>
+                <select id="savedReceiversSelect" onchange="App.pickSavedReceiver(this.value)" class="hidden text-xs bg-white border border-blue-300 rounded-lg px-2 py-1 font-bold text-blue-900">
+                  <option value="">-- Familiares guardados --</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nombre de Quien Recibe en EE. UU. *</label>
+                <input type="text" id="destNombre" data-next="destTel" placeholder="Escribe quién recibe y presiona Enter ↵" class="enter-nav input-focus-ring w-full border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-base font-bold focus:outline-none focus:border-blue-600 bg-white">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Teléfono en EE. UU. *</label>
+                  <input type="tel" id="destTel" data-next="destCiudad" placeholder="Ej. +1 (323) 555-0199" class="enter-nav input-focus-ring w-full border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-blue-600 bg-white">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Ciudad / Estado en EE. UU. *</label>
+                  <input type="text" id="destCiudad" data-next="STEP_2" placeholder="Ej. Los Ángeles, CA (Enter ↵)" class="enter-nav input-focus-ring w-full border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-blue-600 bg-white">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button type="button" onclick="App.goToStep(2)" class="bg-slate-900 hover:bg-slate-800 text-amber-400 font-black px-6 py-3 rounded-xl text-sm flex items-center gap-2 shadow-md">
+              <span>Siguiente Página: Anotar Contenido del Paquete</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- =================================================
+             PASO 2: CAPTURA DETALLADA (CANTIDAD, UNIDAD, PRODUCTO/MARCA, KILOS, PRECIO)
+             ================================================= -->
+        <div id="stepPanel2" class="step-panel hidden space-y-5 pt-2">
+          
+          <!-- Resumen compacto de a quién se le está anotando -->
+          <div class="bg-slate-900 text-white px-4 py-2.5 rounded-xl flex flex-wrap justify-between items-center gap-2 text-xs">
+            <div>
+              <span class="text-slate-400">Envía:</span> <strong id="step2RemPreview" class="text-white">---</strong>
+              <span class="mx-2 text-amber-400">➔</span>
+              <span class="text-slate-400">Recibe en EE. UU.:</span> <strong id="step2DestPreview" class="text-amber-300">---</strong>
+            </div>
+            <button type="button" onclick="App.goToStep(1)" class="text-amber-400 hover:underline font-bold">
+              <i class="fa-solid fa-pen mr-1"></i>Cambiar nombres
+            </button>
+          </div>
+
+          <!-- ASISTENTE VISUAL PARA AGREGAR CADA COSA COMO EN LA VIDA REAL -->
+          <div class="bg-amber-50/70 border-2 border-amber-300 rounded-2xl p-4 space-y-4">
+            <div class="flex flex-wrap justify-between items-center gap-2">
+              <h3 class="text-sm font-black uppercase text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-scale-balanced text-amber-600"></i>
+                <span>Capturador Detallado (Piezas, Bolsas, Cajas de Medicamento y Kilos Exactos)</span>
+              </h3>
+              <span class="text-xs font-bold text-slate-600">Presiona <strong>Enter ↵</strong> en cada campo para avanzar y agregar a la lista</span>
+            </div>
+
+            <!-- Botones rápidos de productos típicos que llenan el formulario de captura -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] font-black uppercase text-slate-500 mr-1">Plantillas rápidas:</span>
+              <button type="button" onclick="App.presetBuilder('Pieza(s)', 'Quesillo', 'kg')" class="text-xs bg-white hover:bg-amber-100 border border-slate-300 font-bold px-2.5 py-1 rounded-lg">+ Quesillo (Piezas y Kg)</button>
+              <button type="button" onclick="App.presetBuilder('Bolsa(s)', 'Mole', 'kg')" class="text-xs bg-white hover:bg-amber-100 border border-slate-300 font-bold px-2.5 py-1 rounded-lg">+ Mole (Bolsas y Kg)</button>
+              <button type="button" onclick="App.presetBuilder('Pieza(s)', 'Queso fresco / cincho', 'kg')" class="text-xs bg-white hover:bg-amber-100 border border-slate-300 font-bold px-2.5 py-1 rounded-lg">+ Queso</button>
+              <button type="button" onclick="App.presetBuilder('Bolsa(s)', 'Pan de fiesta', 'kg')" class="text-xs bg-white hover:bg-amber-100 border border-slate-300 font-bold px-2.5 py-1 rounded-lg">+ Pan</button>
+              <button type="button" onclick="App.presetBuilder('Bolsa(s)', 'Cecina / Carne enchilada', 'kg')" class="text-xs bg-white hover:bg-amber-100 border border-slate-300 font-bold px-2.5 py-1 rounded-lg">+ Carne / Cecina</button>
+              <button type="button" onclick="App.presetBuilder('Caja(s)', 'Medicamento: ', 'pza')" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1 rounded-lg shadow-2xs">
+                <i class="fa-solid fa-pills mr-1"></i>+ Medicamento (Escribir nombre y cajas)
+              </button>
+            </div>
+
+            <!-- Campos paso a paso del artículo -->
+            <div class="grid grid-cols-2 md:grid-cols-12 gap-3 items-end bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+              
+              <!-- 1. Cuántas piezas / bolsas / cajas -->
+              <div class="col-span-1 md:col-span-2">
+                <label class="block text-[11px] font-black uppercase text-slate-600 mb-1">1. ¿Cuántas?</label>
+                <div class="flex gap-1 mb-1">
+                  <button type="button" onclick="App.setQuickQty(1)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-xs font-black py-0.5 rounded">1</button>
+                  <button type="button" onclick="App.setQuickQty(2)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-xs font-black py-0.5 rounded">2</button>
+                  <button type="button" onclick="App.setQuickQty(3)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-xs font-black py-0.5 rounded">3</button>
+                  <button type="button" onclick="App.setQuickQty(4)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-xs font-black py-0.5 rounded">4</button>
+                </div>
+                <input type="number" id="bCant" value="1" min="1" data-next="bEnvase" class="enter-builder w-full border-2 border-slate-300 rounded-lg px-2.5 py-2 text-center font-black text-base focus:outline-none focus:border-amber-500">
+              </div>
+
+              <!-- 2. Tipo de envase (Pieza, Bolsa, Caja, Paquete) -->
+              <div class="col-span-1 md:col-span-2">
+                <label class="block text-[11px] font-black uppercase text-slate-600 mb-1">2. Presentación</label>
+                <select id="bEnvase" data-next="bDesc" class="enter-builder w-full border-2 border-slate-300 rounded-lg px-2 py-2.5 text-sm font-bold bg-white focus:outline-none focus:border-amber-500">
+                  <option value="Pieza(s)">Pieza(s)</option>
+                  <option value="Bolsa(s)">Bolsa(s)</option>
+                  <option value="Caja(s)">Caja(s)</option>
+                  <option value="Paquete(s)">Paquete(s)</option>
+                  <option value="Bote(s)">Bote(s)</option>
+                  <option value="Par(es)">Par(es)</option>
+                </select>
+              </div>
+
+              <!-- 3. Qué envía / Nombre exacto del medicamento -->
+              <div class="col-span-2 md:col-span-4">
+                <label class="block text-[11px] font-black uppercase text-slate-600 mb-1">3. ¿Qué es? (O nombre exacto de medicina)</label>
+                <input type="text" id="bDesc" data-next="bKilos" placeholder="Ej. Quesillo, Mole, Bedoyecta, Doloneurobión Forte..." class="enter-builder w-full border-2 border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:border-amber-500">
+              </div>
+
+              <!-- 4. Cuántos kilos pesa (Botones rápidos 1, 2, 3, 4 kg) -->
+              <div class="col-span-1 md:col-span-2">
+                <label class="block text-[11px] font-black uppercase text-slate-600 mb-1">4. ¿Cuántos Kilos?</label>
+                <div class="flex gap-1 mb-1">
+                  <button type="button" onclick="App.setQuickKg(1)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-[11px] font-black py-0.5 rounded">1kg</button>
+                  <button type="button" onclick="App.setQuickKg(2)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-[11px] font-black py-0.5 rounded">2kg</button>
+                  <button type="button" onclick="App.setQuickKg(3)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-[11px] font-black py-0.5 rounded">3kg</button>
+                  <button type="button" onclick="App.setQuickKg(4)" class="flex-1 bg-slate-100 hover:bg-amber-200 text-[11px] font-black py-0.5 rounded">4kg</button>
+                </div>
+                <input type="number" id="bKilos" value="1" min="0" step="0.1" data-next="bPrecio" oninput="App.updateBuilderPreview()" class="enter-builder w-full border-2 border-slate-300 rounded-lg px-2.5 py-2 text-right font-mono-code font-black text-base focus:outline-none focus:border-amber-500">
+              </div>
+
+              <!-- 5. Precio y Cómo se cobra -->
+              <div class="col-span-1 md:col-span-2">
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-[11px] font-black uppercase text-slate-600">5. Precio ($)</label>
+                  <select id="bModo" onchange="App.updateBuilderPreview()" class="text-[10px] font-bold bg-slate-100 border border-slate-300 rounded px-1">
+                    <option value="kg">× Kilo</option>
+                    <option value="pza">× Pieza/Caja</option>
+                    <option value="directo">Total directo</option>
+                  </select>
+                </div>
+                <input type="number" id="bPrecio" value="180" min="0" step="5" data-next="ADD_ITEM" oninput="App.updateBuilderPreview()" class="enter-builder w-full border-2 border-slate-300 rounded-lg px-2.5 py-2 text-right font-mono-code font-black text-base focus:outline-none focus:border-amber-500">
+              </div>
+
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center gap-3">
+              <div class="text-xs font-bold text-slate-700">
+                Vista previa del renglón: <span id="builderPreviewText" class="text-slate-950 font-black bg-white px-2.5 py-1 rounded border border-slate-300">1 Pieza(s) — $180.00</span>
+              </div>
+              <button type="button" onclick="App.commitBuilderItem()" class="bg-slate-950 hover:bg-slate-800 text-amber-400 font-black px-5 py-2.5 rounded-xl text-xs md:text-sm flex items-center gap-2 shadow">
+                <i class="fa-solid fa-plus"></i> Agregar a la Lista de la Nota (Enter ↵)
+              </button>
+            </div>
+          </div>
+
+          <!-- TABLA DE LO QUE YA SE ANOTÓ EN LA CAJA -->
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-2xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-900 text-white text-[11px] font-extrabold uppercase">
+                  <th class="py-2.5 px-3 w-10 text-center">#</th>
+                  <th class="py-2.5 px-3 w-24 text-center">Cantidad</th>
+                  <th class="py-2.5 px-3 w-32">Presentación</th>
+                  <th class="py-2.5 px-3">Qué envía (Producto / Nombre de Medicamento)</th>
+                  <th class="py-2.5 px-3 w-28 text-right">Kilos (Kg)</th>
+                  <th class="py-2.5 px-3 w-32">Cobro</th>
+                  <th class="py-2.5 px-3 w-28 text-right">Precio Unit.</th>
+                  <th class="py-2.5 px-3 w-32 text-right">Importe</th>
+                  <th class="py-2.5 px-3 w-12 text-center"></th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+
+          <div class="flex flex-wrap justify-between items-center gap-3 pt-2">
+            <button type="button" onclick="App.goToStep(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-xs">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Volver a Nombres
+            </button>
+            <div class="flex items-center gap-4">
+              <div class="text-right">
+                <span class="text-xs text-slate-500 block">Acumulado en esta nota:</span>
+                <span id="step2QuickTotals" class="font-mono-code font-black text-base text-slate-900">0.00 kg — $0.00</span>
+              </div>
+              <button type="button" onclick="App.goToStep(3)" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl text-sm flex items-center gap-2 shadow-md">
+                <span>Siguiente: Revisar Total y Guardar</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================================================
+             PASO 3: ANTICIPO, SALDO Y GUARDAR NOTA
+             ================================================= -->
+        <div id="stepPanel3" class="step-panel hidden space-y-5 pt-2">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-7 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Total Cajas / Bultos</label>
+                  <input type="number" id="formNumCajas" value="1" min="1" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Forma de Pago</label>
+                  <select id="formMetodoPago" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold bg-white">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Por Cobrar en EE. UU.">Paga en EE. UU.</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Estado del Paquete</label>
+                  <select id="formEstadoEnvio" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold bg-white">
+                    <option value="Recibido en Sucursal">Recibido en Sucursal (MX)</option>
+                    <option value="En Tránsito a EE. UU.">En Tránsito a EE. UU.</option>
+                    <option value="Entregado en EE. UU.">Entregado en EE. UU.</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Observaciones de la Nota</label>
+                <textarea id="formObservaciones" rows="3" placeholder="Ej. Producto perecedero, entregar fin de semana..." class="w-full border border-slate-300 rounded-xl p-3 text-sm"></textarea>
+              </div>
+              <button type="button" onclick="App.goToStep(2)" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-xs">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Regresar a Agregar Más Cosas
+              </button>
+            </div>
+
+            <div class="lg:col-span-5 bg-slate-950 text-white rounded-2xl p-5 space-y-3.5 shadow-xl">
+              <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-800 pb-2">
+                <span class="uppercase font-bold">Peso Total de la Nota:</span>
+                <span id="summaryWeightDisplay" class="font-mono-code font-bold text-amber-400 text-sm">0.00 kg</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-300">Subtotal Artículos:</span>
+                <span id="summarySubtotal" class="font-mono-code font-bold">$0.00</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-300">Cargo Extra / Caja ($):</span>
+                <input type="number" id="formCargoExtra" value="0" min="0" step="10" oninput="App.recalculateFormTotals()" class="w-28 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-right font-mono-code font-bold text-white">
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                <span class="text-base font-black">TOTAL A COBRAR:</span>
+                <span id="summaryGranTotal" class="font-mono-code font-black text-2xl text-amber-400">$0.00</span>
+              </div>
+              <div class="flex justify-between items-center text-sm pt-2 border-t border-slate-800">
+                <span class="text-emerald-400 font-bold">Deja Pagado / Anticipo ($):</span>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="App.payFullAmount()" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-1 rounded font-bold">Todo Pagado</button>
+                  <input type="number" id="formAnticipo" value="0" min="0" step="10" oninput="App.recalculateFormTotals()" class="w-28 bg-slate-900 border border-emerald-600 rounded-lg px-2.5 py-1 text-right font-mono-code font-bold text-emerald-400">
+                </div>
+              </div>
+              <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                <span class="text-xs font-black uppercase text-rose-400">Resta por Cobrar en EE. UU.:</span>
+                <span id="summarySaldoMXN" class="font-mono-code font-black text-xl text-rose-400">$0.00</span>
+              </div>
+              <button type="button" onclick="App.saveShipment()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span id="btnSaveMainText">Guardar Nota y Ver Recibo</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =====================================================
+         VISTA 2: BUSCADOR EN ESTADOS UNIDOS
+         ===================================================== -->
+    <section id="view-usa" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-extrabold uppercase text-blue-600 block">Consulta en Estados Unidos</span>
+            <h2 class="text-lg font-black text-slate-900">Buscar por Folio de Nota, Nombre o Contenido</h2>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <select id="usaFilterViaje" onchange="App.renderUSAShipments()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold bg-slate-50">
+              <option value="ALL">Todos los Viajes</option>
+            </select>
+            <select id="usaFilterPayment" onchange="App.renderUSAShipments()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold bg-slate-50">
+              <option value="ALL">Todos (Pagados y Con Saldo)</option>
+              <option value="PENDING">Con Saldo por Cobrar</option>
+              <option value="PAID">Ya Pagados</option>
+            </select>
+          </div>
+        </div>
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-lg"></i>
+          <input type="text" id="usaSearchQuery" oninput="App.renderUSAShipments()" placeholder="Escribe número de nota (ej. 1001), nombre de quien recibe, teléfono o medicamento/producto..." class="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 text-base font-semibold focus:outline-none focus:border-blue-600 focus:bg-white">
+        </div>
+      </div>
+      <div id="usaShipmentsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- =====================================================
+         VISTA 3: DIRECTORIO DE CLIENTES Y BOTÓN "NUEVO VIAJE"
+         ===================================================== -->
+    <section id="view-clientes" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-black text-slate-900">Directorio de Clientes e Historial de Viajes</h2>
+          <p class="text-xs text-slate-500">Busca a la persona y toca <strong>"+ Nuevo Viaje"</strong> para anotarle un envío nuevo sin volver a escribir sus datos.</p>
+        </div>
+        <input type="text" id="clientDirectorySearch" oninput="App.renderClientsDirectory()" placeholder="Buscar cliente..." class="w-full md:w-80 px-4 py-2 rounded-xl border border-slate-300 text-sm font-medium">
+      </div>
+      <div id="clientsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- =====================================================
+         VISTA 4: MANIFIESTO Y CORTE
+         ===================================================== -->
+    <section id="view-manifiesto" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200 space-y-4">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <h2 class="text-lg font-black text-slate-900">Lista General de Notas y Exportación a Excel</h2>
+          <button onclick="App.exportManifestCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold px-4 py-2 rounded-xl flex items-center gap-1.5">
+            <i class="fa-solid fa-file-excel"></i> Descargar Excel (CSV)
+          </button>
+        </div>
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900 text-white uppercase font-bold">
+                <th class="py-2.5 px-3">Folio</th>
+                <th class="py-2.5 px-3">Envía (MX)</th>
+                <th class="py-2.5 px-3">Recibe (EE. UU.)</th>
+                <th class="py-2.5 px-3">Detalle de Contenido</th>
+                <th class="py-2.5 px-3 text-right">Kilos</th>
+                <th class="py-2.5 px-3 text-right">Total</th>
+                <th class="py-2.5 px-3 text-right">Saldo</th>
+                <th class="py-2.5 px-3 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="manifestTableBody" class="divide-y divide-slate-200"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE IMPRESIÓN DE NOTA Y ETIQUETA -->
+  <div id="printModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-300 my-8">
+      <div class="bg-slate-900 text-white px-5 py-3 flex flex-wrap items-center justify-between gap-2 no-print">
+        <div class="flex gap-2">
+          <button onclick="App.setPrintFormat('nota')" id="btnFormatNota" class="bg-amber-500 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-xs">Nota Completa</button>
+          <button onclick="App.setPrintFormat('etiqueta')" id="btnFormatEtiqueta" class="bg-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded-lg text-xs">Etiqueta para Caja (QR)</button>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="App.shareViaWhatsApp()" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</button>
+          <button onclick="window.print()" class="bg-blue-600 text-white font-extrabold px-3 py-1.5 rounded-lg text-xs"><i class="fa-solid fa-print mr-1"></i>Imprimir</button>
+          <button onclick="App.closePrintModal()" class="text-slate-400 hover:text-white px-2 text-lg"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div id="printContainer" class="p-6 bg-white text-slate-900"></div>
+    </div>
+  </div>
+
+  <!-- MODAL HISTORIAL DE CLIENTE -->
+  <div id="clientHistoryModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 overflow-y-auto no-print">
+    <div class="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 my-8">
+      <div class="bg-slate-900 text-white px-5 py-3.5 flex justify-between items-center">
+        <h3 id="modalClientTitle" class="text-base font-black"></h3>
+        <div class="flex gap-2">
+          <button id="modalBtnNewTrip" class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs">+ Nuevo Viaje</button>
+          <button onclick="App.closeClientModal()" class="text-slate-400 hover:text-white px-2 text-lg"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div id="modalClientHistoryList" class="p-5 max-h-[70vh] overflow-y-auto space-y-3"></div>
+    </div>
+  </div>
+
+  <script>
+    const App = {
+      STORAGE_KEY: 'PAQUETERIA_STH_PRO_ZERO_V3',
+      currentStep: 1,
+      currentItems: [],
+      currentPrintShipmentId: null,
+      currentPrintMode: 'nota',
+
+      state: {
+        config: { nextFolio: 1001, currentViaje: 'Viaje General', defaultRateKg: 180 },
+        clientes: [],
+        envios: []
+      },
+
+      init() {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed && Array.isArray(parsed.envios)) this.state = parsed;
+          } catch (e) { console.error(e); }
+        }
+        document.getElementById('formViaje').value = this.state.config.currentViaje || 'Viaje General';
+        this.setupEnterNavigation();
+        this.resetCaptureForm();
+        this.refreshAllIndicators();
+        this.updateBuilderPreview();
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('#quickSearchClientInput') && !e.target.closest('#quickSearchDropdown')) {
+            document.getElementById('quickSearchDropdown').classList.add('hidden');
+          }
+        });
+      },
+
+      saveState() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+        this.refreshAllIndicators();
+      },
+
+      // NAVEGACIÓN CON TECLA ENTER PASO A PASO
+      setupEnterNavigation() {
+        document.querySelectorAll('.enter-nav').forEach(input => {
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const nextId = input.getAttribute('data-next');
+              if (nextId === 'STEP_2') {
+                this.goToStep(2);
+              } else {
+                const nextEl = document.getElementById(nextId);
+                if (nextEl) nextEl.focus();
+              }
+            }
+          });
+        });
+
+        document.querySelectorAll('.enter-builder').forEach(input => {
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const nextId = input.getAttribute('data-next');
+              if (nextId === 'ADD_ITEM') {
+                this.commitBuilderItem();
+              } else {
+                const nextEl = document.getElementById(nextId);
+                if (nextEl) {
+                  nextEl.focus();
+                  if (nextEl.select) nextEl.select();
+                }
+              }
+            }
+          });
+        });
+      },
+
+      goToStep(stepNumber) {
+        if (stepNumber === 2) {
+          const rNom = document.getElementById('remNombre').value.trim() || 'Sin nombre';
+          const dNom = document.getElementById('destNombre').value.trim() || 'Sin destinatario';
+          const dCiu = document.getElementById('destCiudad').value.trim();
+          document.getElementById('step2RemPreview').textContent = rNom;
+          document.getElementById('step2DestPreview').textContent = dCiu ? `${dNom} (${dCiu})` : dNom;
+        }
+
+        this.currentStep = stepNumber;
+        [1, 2, 3].forEach(n => {
+          document.getElementById(`stepPanel${n}`).classList.toggle('hidden', n !== stepNumber);
+          const btn = document.getElementById(`stepBtn${n}`);
+          if (n === stepNumber) {
+            btn.className = 'py-2.5 px-3 rounded-xl font-extrabold text-xs md:text-sm flex items-center justify-center gap-2 bg-slate-900 text-amber-400 shadow';
+          } else {
+            btn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 bg-slate-100 text-slate-600 hover:bg-slate-200';
+          }
+        });
+
+        if (stepNumber === 1) document.getElementById('remNombre').focus();
+        if (stepNumber === 2) document.getElementById('bCant').focus();
+        if (stepNumber === 3) this.recalculateFormTotals();
+      },
+
+      // CAPTURADOR DE PIEZAS, BOLSAS, MEDICAMENTOS Y KILOS
+      setQuickQty(n) {
+        document.getElementById('bCant').value = n;
+        this.updateBuilderPreview();
+        document.getElementById('bDesc').focus();
+      },
+
+      setQuickKg(kg) {
+        document.getElementById('bKilos').value = kg;
+        this.updateBuilderPreview();
+      },
+
+      presetBuilder(envase, nombreBase, modoCobro) {
+        document.getElementById('bEnvase').value = envase;
+        const descInput = document.getElementById('bDesc');
+        descInput.value = nombreBase;
+        document.getElementById('bModo').value = modoCobro;
+        if (modoCobro === 'pza') {
+          document.getElementById('bKilos').value = 0.2;
+          document.getElementById('bPrecio').value = 250;
+        } else {
+          document.getElementById('bKilos').value = 1;
+          document.getElementById('bPrecio').value = 180;
+        }
+        this.updateBuilderPreview();
+        descInput.focus();
+      },
+
+      updateBuilderPreview() {
+        const cant = parseFloat(document.getElementById('bCant').value) || 1;
+        const envase = document.getElementById('bEnvase').value;
+        const desc = document.getElementById('bDesc').value.trim() || '(Escribe qué envía)';
+        const kilos = parseFloat(document.getElementById('bKilos').value) || 0;
+        const modo = document.getElementById('bModo').value;
+        const precio = parseFloat(document.getElementById('bPrecio').value) || 0;
+
+        const importe = modo === 'kg' ? (kilos * precio) : (modo === 'pza' ? (cant * precio) : precio);
+        document.getElementById('builderPreviewText').textContent =
+          `${cant} ${envase} de ${desc} (${kilos} kg) ➔ ${this.formatCurrency(importe)}`;
+      },
+
+      commitBuilderItem() {
+        const cant = parseFloat(document.getElementById('bCant').value) || 1;
+        const envase = document.getElementById('bEnvase').value;
+        const desc = document.getElementById('bDesc').value.trim();
+        const kilos = parseFloat(document.getElementById('bKilos').value) || 0;
+        const modo = document.getElementById('bModo').value;
+        const precio = parseFloat(document.getElementById('bPrecio').value) || 0;
+
+        if (!desc) {
+          this.notify('Escribe qué producto o nombre de medicamento envía.', 'error');
+          document.getElementById('bDesc').focus();
+          return;
+        }
+
+        const importe = modo === 'kg' ? (kilos * precio) : (modo === 'pza' ? (cant * precio) : precio);
+        this.currentItems.push({ cant, envase, desc, kilos, modo, precio, importe });
+
+        // Limpiar para el siguiente producto
+        document.getElementById('bCant').value = 1;
+        document.getElementById('bDesc').value = '';
+        document.getElementById('bKilos').value = 1;
+        this.updateBuilderPreview();
+        this.renderItemsTable();
+        document.getElementById('bCant').focus();
+        document.getElementById('bCant').select();
+      },
+
+      renderItemsTable() {
+        const tbody = document.getElementById('itemsTableBody');
+        if (this.currentItems.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-400 text-xs font-semibold">Aún no has agregado artículos a esta nota. Usa el cuadro de arriba y presiona Enter ↵.</td></tr>`;
+          this.recalculateFormTotals();
+          return;
+        }
+
+        tbody.innerHTML = this.currentItems.map((item, idx) => `
+          <tr class="hover:bg-amber-50/40">
+            <td class="py-2.5 px-3 text-center font-mono-code text-xs text-slate-400">${idx + 1}</td>
+            <td class="py-2.5 px-3 text-center">
+              <input type="number" min="1" value="${item.cant}" onchange="App.EditRowItem(${idx}, 'cant', this.value)" class="w-16 border border-slate-300 rounded px-1.5 py-1 text-center font-bold">
+            </td>
+            <td class="py-2.5 px-3 font-semibold text-slate-700">${item.envase}</td>
+            <td class="py-2.5 px-3">
+              <input type="text" value="${item.desc}" onchange="App.EditRowItem(${idx}, 'desc', this.value)" class="w-full border border-slate-300 rounded px-2 py-1 font-bold text-slate-900">
+            </td>
+            <td class="py-2.5 px-3 text-right">
+              <input type="number" min="0" step="0.1" value="${item.kilos}" onchange="App.EditRowItem(${idx}, 'kilos', this.value)" class="w-20 border border-slate-300 rounded px-1.5 py-1 text-right font-mono-code font-bold">
+            </td>
+            <td class="py-2.5 px-3 text-xs font-bold text-slate-500">
+              ${item.modo === 'kg' ? 'Por Kilo' : (item.modo === 'pza' ? 'Por Pieza/Caja' : 'Precio Directo')}
+            </td>
+            <td class="py-2.5 px-3 text-right">
+              <input type="number" min="0" step="5" value="${item.precio}" onchange="App.EditRowItem(${idx}, 'precio', this.value)" class="w-24 border border-slate-300 rounded px-1.5 py-1 text-right font-mono-code font-bold">
+            </td>
+            <td class="py-2.5 px-3 text-right font-mono-code font-black text-slate-900">${this.formatCurrency(item.importe)}</td>
+            <td class="py-2.5 px-3 text-center">
+              <button type="button" onclick="App.removeItem(${idx})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+          </tr>
+        `).join('');
+
+        this.recalculateFormTotals();
+      },
+
+      EditRowItem(idx, field, val) {
+        const it = this.currentItems[idx];
+        if (!it) return;
+        if (field === 'desc') it.desc = val;
+        else it[field] = parseFloat(val) || 0;
+        it.importe = it.modo === 'kg' ? (it.kilos * it.precio) : (it.modo === 'pza' ? (it.cant * it.precio) : it.precio);
+        this.renderItemsTable();
+      },
+
+      removeItem(idx) {
+        this.currentItems.splice(idx, 1);
+        this.renderItemsTable();
+      },
+
+      recalculateFormTotals() {
+        const pesoTotalKg = this.currentItems.reduce((s, i) => s + (Number(i.kilos) || 0), 0);
+        const subtotal = this.currentItems.reduce((s, i) => s + (Number(i.importe) || 0), 0);
+        const extra = parseFloat(document.getElementById('formCargoExtra').value) || 0;
+        const granTotal = subtotal + extra;
+        const anticipo = parseFloat(document.getElementById('formAnticipo').value) || 0;
+        const saldo = Math.max(0, granTotal - anticipo);
+
+        document.getElementById('step2QuickTotals').textContent = `${pesoTotalKg.toFixed(2)} kg — ${this.formatCurrency( subtotal )}`;
+        document.getElementById('summaryWeightDisplay').textContent = `${pesoTotalKg.toFixed(2)} kg`;
+        document.getElementById('summarySubtotal').textContent = this.formatCurrency(subtotal);
+        document.getElementById('summaryGranTotal').textContent = this.formatCurrency(granTotal);
+        document.getElementById('summarySaldoMXN').textContent = this.formatCurrency(saldo);
+      },
+
+      payFullAmount() {
+        const subtotal = this.currentItems.reduce((s, i) => s + (Number(i.importe) || 0), 0);
+        const extra = parseFloat(document.getElementById('formCargoExtra').value) || 0;
+        document.getElementById('formAnticipo').value = (subtotal + extra).toFixed(2);
+        this.recalculateFormTotals();
+      },
+
+      // GUARDAR NOTA E HISTORIAL DEL CLIENTE
+      saveShipment() {
+        const remNombre = document.getElementById('remNombre').value.trim();
+        const remTel = document.getElementById('remTel').value.trim();
+        const remOrigen = document.getElementById('remOrigen').value.trim();
+        const destNombre = document.getElementById('destNombre').value.trim();
+        const destTel = document.getElementById('destTel').value.trim();
+        const destCiudad = document.getElementById('destCiudad').value.trim();
+        const viaje = document.getElementById('formViaje').value.trim() || 'Viaje General';
+
+        if (!remNombre || !destNombre) {
+          this.notify('Falta el nombre de quién envía o quién recibe en el Paso 1.', 'error');
+          this.goToStep(1);
+          return;
+        }
+        if (this.currentItems.length === 0) {
+          this.notify('Agrega al menos un artículo en el Paso 2.', 'error');
+          this.goToStep(2);
+          return;
+        }
+
+        const pesoTotalKg = this.currentItems.reduce((s, i) => s + (Number(i.kilos) || 0), 0);
+        const subtotal = this.currentItems.reduce((s, i) => s + (Number(i.importe) || 0), 0);
+        const cargoExtra = parseFloat(document.getElementById('formCargoExtra').value) || 0;
+        const total = subtotal + cargoExtra;
+        const anticipo = parseFloat(document.getElementById('formAnticipo').value) || 0;
+        const saldo = Math.max(0, total - anticipo);
+        const numCajas = parseInt(document.getElementById('formNumCajas').value) || 1;
+        const metodoPago = document.getElementById('formMetodoPago').value;
+        const estado = document.getElementById('formEstadoEnvio').value;
+        const observaciones = document.getElementById('formObservaciones').value.trim();
+
+        // Guardar o actualizar cliente
+        let clientId = document.getElementById('selectedClientId').value;
+        let client = this.state.clientes.find(c => c.id === clientId || c.nombre.toLowerCase() === remNombre.toLowerCase());
+        if (!client) {
+          client = {
+            id: 'CLI-' + Date.now(),
+            nombre: remNombre,
+            tel: remTel,
+            origen: remOrigen,
+            destinatarios: [{ nombre: destNombre, tel: destTel, ciudad: destCiudad }]
+          };
+          this.state.clientes.push(client);
+        } else {
+          client.tel = remTel || client.tel;
+          const ex = client.destinatarios.find(d => d.nombre.toLowerCase() === destNombre.toLowerCase());
+          if (ex) { ex.tel = destTel; ex.ciudad = destCiudad; }
+          else client.destinatarios.push({ nombre: destNombre, tel: destTel, ciudad: destCiudad });
+        }
+
+        const editingId = document.getElementById('editingShipmentId').value;
+        let saved = null;
+
+        if (editingId) {
+          const idx = this.state.envios.findIndex(e => e.id === editingId);
+          if (idx !== -1) {
+            saved = {
+              ...this.state.envios[idx],
+              viaje, clienteId: client.id,
+              remitente: { nombre: remNombre, tel: remTel, origen: remOrigen },
+              destinatario: { nombre: destNombre, tel: destTel, ciudad: destCiudad },
+              items: [...this.currentItems],
+              pesoTotalKg, subtotal, cargoExtra, total, anticipo, saldo, numCajas, metodoPago, estado, observaciones
+            };
+            this.state.envios[idx] = saved;
+          }
+        } else {
+          const folio = `STH-${this.state.config.nextFolio++}`;
+          this.state.config.currentViaje = viaje;
+          saved = {
+            id: 'ENV-' + Date.now(),
+            folio,
+            fecha: new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }),
+            viaje, clienteId: client.id,
+            remitente: { nombre: remNombre, tel: remTel, origen: remOrigen },
+            destinatario: { nombre: destNombre, tel: destTel, ciudad: destCiudad },
+            items: [...this.currentItems],
+            pesoTotalKg, subtotal, cargoExtra, total, anticipo, saldo, numCajas, metodoPago, estado, observaciones
+          };
+          this.state.envios.unshift(saved);
+        }
+
+        this.saveState();
+        this.resetCaptureForm();
+        if (saved) this.openPrintModal(saved.id, 'nota');
+      },
+
+      resetCaptureForm() {
+        this.currentItems = [];
+        document.getElementById('editingShipmentId').value = '';
+        document.getElementById('selectedClientId').value = '';
+        document.getElementById('formFolioDisplay').textContent = `FOLIO: STH-${this.state.config.nextFolio}`;
+        document.getElementById('editingModeBadge').classList.add('hidden');
+        document.getElementById('linkedClientBadge').classList.add('hidden');
+        document.getElementById('savedReceiversSelect').classList.add('hidden');
+
+        document.getElementById('remNombre').value = '';
+        document.getElementById('remTel').value = '';
+        document.getElementById('destNombre').value = '';
+        document.getElementById('destTel').value = '';
+        document.getElementById('destCiudad').value = '';
+        document.getElementById('formCargoExtra').value = 0;
+        document.getElementById('formAnticipo').value = 0;
+        document.getElementById('formObservaciones').value = '';
+
+        this.renderItemsTable();
+        this.goToStep(1);
+      },
+
+      // AUTOCOMPLETADO Y NUEVO VIAJE
+      handleQuickClientAutocomplete(q) {
+        const drop = document.getElementById('quickSearchDropdown');
+        const query = q.trim().toLowerCase();
+        if (!query) { drop.classList.add('hidden'); return; }
+        const matches = this.state.clientes.filter(c =>
+          c.nombre.toLowerCase().includes(query) ||
+          c.tel.toLowerCase().includes(query) ||
+          c.destinatarios.some(d => d.nombre.toLowerCase().includes(query))
+        );
+        if (matches.length === 0) {
+          drop.innerHTML = `<div class="p-3 text-xs text-slate-500">Cliente nuevo. Llena el Paso 1 y quedará guardado.</div>`;
+          drop.classList.remove('hidden');
+          return;
+        }
+        drop.innerHTML = matches.map(c => `
+          <div onclick="App.loadClientIntoForm('${c.id}')" class="p-3 hover:bg-amber-50 cursor-pointer flex justify-between items-center">
+            <div>
+              <p class="font-bold text-sm">${c.nombre}</p>
+              <p class="text-xs text-slate-500">${c.tel}</p>
+            </div>
+            <span class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded">+ Nuevo Viaje</span>
+          </div>
+        `).join('');
+        drop.classList.remove('hidden');
+      },
+
+      loadClientIntoForm(clientId) {
+        const c = this.state.clientes.find(x => x.id === clientId);
+        if (!c) return;
+        this.switchView('captura');
+        document.getElementById('quickSearchDropdown').classList.add('hidden');
+        document.getElementById('quickSearchClientInput').value = '';
+        document.getElementById('selectedClientId').value = c.id;
+        document.getElementById('remNombre').value = c.nombre;
+        document.getElementById('remTel').value = c.tel;
+        document.getElementById('remOrigen').value = c.origen || 'Santo Tomás Hueyotlipan';
+
+        const badge = document.getElementById('linkedClientBadge');
+        badge.textContent = `Cliente frecuente: ${c.nombre}`;
+        badge.classList.remove('hidden');
+
+        const sel = document.getElementById('savedReceiversSelect');
+        if (c.destinatarios && c.destinatarios.length > 0) {
+          sel.innerHTML = `<option value="">-- Familiares guardados (${c.destinatarios.length}) --</option>` +
+            c.destinatarios.map((d, i) => `<option value="${i}">${d.nombre} (${d.ciudad})</option>`).join('');
+          sel.classList.remove('hidden');
+          const last = c.destinatarios[c.destinatarios.length - 1];
+          document.getElementById('destNombre').value = last.nombre;
+          document.getElementById('destTel').value = last.tel;
+          document.getElementById('destCiudad').value = last.ciudad;
+        }
+        this.goToStep(2);
+      },
+
+      pickSavedReceiver(idx) {
+        const c = this.state.clientes.find(x => x.id === document.getElementById('selectedClientId').value);
+        if (!c || idx === '') return;
+        const d = c.destinatarios[parseInt(idx)];
+        if (d) {
+          document.getElementById('destNombre').value = d.nombre;
+          document.getElementById('destTel').value = d.tel;
+          document.getElementById('destCiudad').value = d.ciudad;
+        }
+      },
+
+      // VISTAS SECUNDARIAS
+      switchView(v) {
+        ['captura', 'usa', 'clientes', 'manifiesto'].forEach(name => {
+          document.getElementById(`view-${name}`).classList.toggle('hidden', name !== v);
+          const btn = document.getElementById(`nav-${name}`);
+          btn.className = name === v
+            ? 'px-3 py-2 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 bg-amber-500 text-slate-950'
+            : 'px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5';
+        });
+        if (v === 'usa') { this.populateTripSelects(); this.renderUSAShipments(); }
+        if (v === 'clientes') this.renderClientsDirectory();
+        if (v === 'manifiesto') this.renderManifestTable();
+      },
+
+      populateTripSelects() {
+        const viajes = [...new Set(this.state.envios.map(e => e.viaje))];
+        const sel = document.getElementById('usaFilterViaje');
+        sel.innerHTML = `<option value="ALL">Todos los Viajes (${this.state.envios.length})</option>` +
+          viajes.map(v => `<option value="${v}">${v}</option>`).join('');
+      },
+
+      renderUSAShipments() {
+        const q = document.getElementById('usaSearchQuery').value.trim().toLowerCase();
+        const fViaje = document.getElementById('usaFilterViaje').value;
+        const fPay = document.getElementById('usaFilterPayment').value;
+        const grid = document.getElementById('usaShipmentsGrid');
+
+        const filtered = this.state.envios.filter(e => {
+          const mV = fViaje === 'ALL' || e.viaje === fViaje;
+          const mP = fPay === 'ALL' || (fPay === 'PENDING' && e.saldo > 0) || (fPay === 'PAID' && e.saldo <= 0);
+          const mQ = !q ||
+            e.folio.toLowerCase().includes(q) ||
+            e.destinatario.nombre.toLowerCase().includes(q) ||
+            e.destinatario.tel.toLowerCase().includes(q) ||
+            e.remitente.nombre.toLowerCase().includes(q) ||
+            e.items.some(i => i.desc.toLowerCase().includes(q));
+          return mV && mP && mQ;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="col-span-full bg-white p-10 rounded-2xl text-center text-slate-400 font-bold border border-slate-200">No hay paquetes registrados o que coincidan con la búsqueda.</div>`;
+          return;
+        }
+
+        grid.innerHTML = filtered.map(e => `
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="bg-slate-950 text-amber-400 font-mono-code font-black text-sm px-3 py-1 rounded-lg">${e.folio}</span>
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">${e.estado}</span>
+              </div>
+              <div class="bg-blue-50/70 p-3.5 rounded-xl border border-blue-200">
+                <span class="text-[10px] font-black uppercase text-blue-700 block">Para entregar en EE. UU. a:</span>
+                <p class="text-base font-black text-slate-900">${e.destinatario.nombre}</p>
+                <p class="text-xs font-bold text-slate-700 mt-0.5"><i class="fa-solid fa-phone mr-1 text-blue-600"></i>${e.destinatario.tel} · ${e.destinatario.ciudad}</p>
+              </div>
+              <p class="text-xs text-slate-600"><strong>Envió (MX):</strong> ${e.remitente.nombre} (${e.remitente.tel})</p>
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                <span class="text-[10px] font-black uppercase text-slate-400 block">Contenido anotado:</span>
+                ${e.items.map(i => `<div>• <strong>${i.cant} ${i.envase || 'Pza'}</strong> de <strong>${i.desc}</strong> (${i.kilos} kg) — ${this.formatCurrency(i.importe)}</div>`).join('')}
+              </div>
+            </div>
+            <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+              <div>
+                <span class="text-xs text-slate-500 block">Total: ${this.formatCurrency(e.total)} (${e.pesoTotalKg.toFixed(1)} kg)</span>
+                ${e.saldo > 0
+                  ? `<span class="text-xs font-black text-rose-600">COBRAR: ${this.formatCurrency(e.saldo)}</span>`
+                  : `<span class="text-xs font-black text-emerald-600">PAGADO COMPLETO</span>`}
+              </div>
+              <div class="flex gap-1.5">
+                ${e.saldo > 0 ? `<button onclick="App.settlePaymentInUSA('${e.id}')" class="bg-emerald-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg">Liquidar</button>` : ''}
+                <button onclick="App.openPrintModal('${e.id}', 'nota')" class="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Ver Nota</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      settlePaymentInUSA(id) {
+        const e = this.state.envios.find(x => x.id === id);
+        if (!e) return;
+        e.anticipo = e.total;
+        e.saldo = 0;
+        e.estado = 'Entregado en EE. UU.';
+        this.saveState();
+        this.renderUSAShipments();
+      },
+
+      renderClientsDirectory() {
+        const q = document.getElementById('clientDirectorySearch').value.trim().toLowerCase();
+        const cont = document.getElementById('clientsGridContainer');
+        const filtered = this.state.clientes.filter(c => !q || c.nombre.toLowerCase().includes(q) || c.tel.toLowerCase().includes(q));
+        if (filtered.length === 0) {
+          cont.innerHTML = `<div class="col-span-full bg-white p-10 rounded-2xl text-center text-slate-400 font-bold border border-slate-200">Sin clientes registrados todavía.</div>`;
+          return;
+        }
+        cont.innerHTML = filtered.map(c => {
+          const hist = this.state.envios.filter(e => e.clienteId === c.id);
+          return `
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col justify-between gap-4">
+              <div>
+                <h3 class="font-black text-base">${c.nombre}</h3>
+                <p class="text-xs text-slate-500">${c.tel} · ${hist.length} viaje(s)</p>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="App.openClientModal('${c.id}')" class="flex-1 bg-slate-100 text-slate-700 font-bold text-xs py-2 rounded-xl">Historial</button>
+                <button onclick="App.loadClientIntoForm('${c.id}')" class="flex-1 bg-amber-500 text-slate-950 font-black text-xs py-2 rounded-xl">+ Nuevo Viaje</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      openClientModal(clientId) {
+        const c = this.state.clientes.find(x => x.id === clientId);
+        if (!c) return;
+        document.getElementById('modalClientTitle').textContent = c.nombre;
+        document.getElementById('modalBtnNewTrip').onclick = () => { this.closeClientModal(); this.loadClientIntoForm(clientId); };
+        const hist = this.state.envios.filter(e => e.clienteId === clientId);
+        document.getElementById('modalClientHistoryList').innerHTML = hist.map(e => `
+          <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex justify-between items-center">
+            <div>
+              <span class="bg-slate-900 text-amber-400 font-mono-code font-bold text-xs px-2 py-0.5 rounded">${e.folio}</span>
+              <span class="text-xs font-bold ml-2">${e.viaje} (${e.fecha})</span>
+              <p class="text-xs text-slate-600 mt-1">Recibió: <strong>${e.destinatario.nombre}</strong></p>
+            </div>
+            <button onclick="App.closeClientModal(); App.openPrintModal('${e.id}', 'nota')" class="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Ver Nota</button>
+          </div>
+        `).join('');
+        document.getElementById('clientHistoryModal').classList.remove('hidden');
+      },
+
+      closeClientModal() { document.getElementById('clientHistoryModal').classList.add('hidden'); },
+
+      renderManifestTable() {
+        const tbody = document.getElementById('manifestTableBody');
+        if (this.state.envios.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400 font-bold">Sin notas registradas.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = this.state.envios.map(e => `
+          <tr>
+            <td class="py-2.5 px-3 font-mono-code font-bold">${e.folio}</td>
+            <td class="py-2.5 px-3 font-semibold">${e.remitente.nombre}</td>
+            <td class="py-2.5 px-3 font-semibold text-blue-900">${e.destinatario.nombre} (${e.destinatario.ciudad})</td>
+            <td class="py-2.5 px-3">${e.items.map(i => `${i.cant} ${i.envase || ''} ${i.desc} (${i.kilos}kg)`).join(', ')}</td>
+            <td class="py-2.5 px-3 text-right font-mono-code">${e.pesoTotalKg.toFixed(1)} kg</td>
+            <td class="py-2.5 px-3 text-right font-mono-code font-bold">${this.formatCurrency(e.total)}</td>
+            <td class="py-2.5 px-3 text-right font-mono-code font-bold text-rose-600">${this.formatCurrency(e.saldo)}</td>
+            <td class="py-2.5 px-3 text-center">
+              <button onclick="App.openPrintModal('${e.id}', 'nota')" class="text-blue-600 font-bold mr-2">Nota</button>
+              <button onclick="App.deleteShipment('${e.id}')" class="text-rose-600 font-bold">Borrar</button>
+            </td>
+          </tr>
+        `).join('');
+      },
+
+      deleteShipment(id) {
+        if (!confirm('¿Eliminar esta nota?')) return;
+        this.state.envios = this.state.envios.filter(e => e.id !== id);
+        this.saveState();
+        this.renderManifestTable();
+      },
+
+      // IMPRESIÓN Y WHATSAPP
+      openPrintModal(id, mode = 'nota') {
+        this.currentPrintShipmentId = id;
+        this.currentPrintMode = mode;
+        this.renderPrintView();
+        document.getElementById('printModal').classList.remove('hidden');
+      },
+      closePrintModal() { document.getElementById('printModal').classList.add('hidden'); },
+      setPrintFormat(mode) { this.currentPrintMode = mode; this.renderPrintView(); },
+
+      renderPrintView() {
+        const e = this.state.envios.find(x => x.id === this.currentPrintShipmentId);
+        if (!e) return;
+        const cont = document.getElementById('printContainer');
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(e.folio + ' | ' + e.destinatario.nombre)}`;
+
+        if (this.currentPrintMode === 'nota') {
+          cont.innerHTML = `
+            <div class="space-y-4">
+              <div class="flex justify-between items-start border-b-2 border-slate-900 pb-3">
+                <div>
+                  <h2 class="text-xl font-black uppercase">Paquetería Santo Tomás Hueyotlipan</h2>
+                  <p class="text-xs text-slate-600 font-bold">Viaje: ${e.viaje} · Fecha: ${e.fecha}</p>
+                </div>
+                <span class="bg-slate-950 text-white font-mono-code font-black text-lg px-3 py-1 rounded-lg">${e.folio}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-4 bg-slate-50 p-3.5 rounded-xl border border-slate-300 text-xs">
+                <div>
+                  <p class="font-black text-slate-500 uppercase">Envía (México):</p>
+                  <p class="font-bold text-sm">${e.remitente.nombre}</p>
+                  <p>Tel: ${e.remitente.tel}</p>
+                </div>
+                <div class="border-l border-slate-300 pl-3">
+                  <p class="font-black text-blue-700 uppercase">Recibe (Estados Unidos):</p>
+                  <p class="font-bold text-sm">${e.destinatario.nombre}</p>
+                  <p class="font-bold">Tel USA: ${e.destinatario.tel}</p>
+                  <p>${e.destinatario.ciudad}</p>
+                </div>
+              </div>
+              <table class="w-full text-xs border-collapse border border-slate-300">
+                <thead>
+                  <tr class="bg-slate-100 border-b border-slate-300">
+                    <th class="py-1.5 px-2 text-center">Cant.</th>
+                    <th class="py-1.5 px-2 text-left">Presentación</th>
+                    <th class="py-1.5 px-2 text-left">Descripción / Medicamento</th>
+                    <th class="py-1.5 px-2 text-right">Kilos</th>
+                    <th class="py-1.5 px-2 text-right">Importe</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  ${e.items.map(i => `
+                    <tr>
+                      <td class="py-1.5 px-2 text-center font-bold">${i.cant}</td>
+                      <td class="py-1.5 px-2">${i.envase || 'Pieza(s)'}</td>
+                      <td class="py-1.5 px-2 font-bold">${i.desc}</td>
+                      <td class="py-1.5 px-2 text-right font-mono-code">${i.kilos} kg</td>
+                      <td class="py-1.5 px-2 text-right font-mono-code font-bold">${this.formatCurrency(i.importe)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              <div class="flex justify-between items-center pt-2">
+                <img src="${qrUrl}" class="w-20 h-20 border border-slate-300 rounded p-1">
+                <div class="w-60 bg-slate-50 p-3 rounded-xl border border-slate-300 text-xs space-y-1">
+                  <div class="flex justify-between"><span>Peso Total:</span><strong>${e.pesoTotalKg.toFixed(2)} kg</strong></div>
+                  <div class="flex justify-between font-black text-sm"><span>Total:</span><span>${this.formatCurrency(e.total)}</span></div>
+                  <div class="flex justify-between text-emerald-700 font-bold"><span>Anticipo:</span><span>${this.formatCurrency(e.anticipo)}</span></div>
+                  <div class="flex justify-between text-rose-600 font-black text-sm border-t border-slate-300 pt-1"><span>Saldo:</span><span>${this.formatCurrency(e.saldo)}</span></div>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          cont.innerHTML = `
+            <div class="border-4 border-slate-950 rounded-2xl p-5 max-w-lg mx-auto space-y-3 text-center">
+              <div class="text-xs font-black uppercase">PAQUETERÍA SANTO TOMÁS HUEYOTLIPAN</div>
+              <div class="bg-slate-950 text-white font-mono-code font-black text-3xl py-2 rounded-xl">${e.folio}</div>
+              <div class="bg-slate-100 p-3 rounded-xl border border-slate-400 text-left">
+                <div class="text-[10px] font-black uppercase text-slate-500">RECIBE EN EE. UU.:</div>
+                <div class="text-xl font-black uppercase">${e.destinatario.nombre}</div>
+                <div class="text-base font-bold text-blue-900">Tel: ${e.destinatario.tel}</div>
+                <div class="text-sm font-bold">${e.destinatario.ciudad}</div>
+              </div>
+              <img src="${qrUrl}" class="w-28 h-28 mx-auto border border-slate-900 p-1 rounded">
+              <div class="font-black text-sm">${e.saldo > 0 ? 'COBRAR EN ENTREGA: ' + this.formatCurrency(e.saldo) : 'PAGADO COMPLETO'}</div>
+            </div>
+          `;
+        }
+      },
+
+      shareViaWhatsApp() {
+        const e = this.state.envios.find(x => x.id === this.currentPrintShipmentId);
+        if (!e) return;
+        const msg = `*PAQUETERÍA SANTO TOMÁS HUEYOTLIPAN*
+*Folio:* ${e.folio}
+*Envía:* ${e.remitente.nombre}
+*Recibe en EE. UU.:* ${e.destinatario.nombre} (${e.destinatario.ciudad})
+*Contenido:*
+` +
+          e.items.map(i => `- ${i.cant} ${i.envase || 'Pza'} de ${i.desc} (${i.kilos} kg): ${this.formatCurrency(i.importe)}`).join('
+') +
+          `
+*Peso Total:* ${e.pesoTotalKg.toFixed(2)} kg
+*Total:* ${this.formatCurrency(e.total)}
+*Saldo pendiente:* ${this.formatCurrency(e.saldo)}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      },
+
+      refreshAllIndicators() {
+        const envios = this.state.envios;
+        document.getElementById('kpi-total-envios').textContent = envios.length;
+        document.getElementById('kpi-peso-total').textContent = envios.reduce((s, e) => s + (Number(e.pesoTotalKg) || 0), 0).toFixed(1) + ' kg';
+        document.getElementById('kpi-cobrado').textContent = this.formatCurrency(envios.reduce((s, e) => s + (Number(e.anticipo) || 0), 0));
+        document.getElementById('kpi-pendiente').textContent = this.formatCurrency(envios.reduce((s, e) => s + (Number(e.saldo) || 0), 0));
+      },
+
+      exportManifestCSV() {
+        if (this.state.envios.length === 0) return;
+        const rows = this.state.envios.map(e => `${e.folio},"${e.remitente.nombre}","${e.destinatario.nombre}","${e.destinatario.ciudad}",${e.pesoTotalKg.toFixed(2)},${e.total},${e.saldo}`);
+        const csv = '﻿' + ['Folio,Envia,Recibe,Ciudad,Kilos,Total,Saldo', ...rows].join('
+');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+        a.download = 'Lista_Paqueteria_SantoTomas.csv';
+        a.click();
+      },
+
+      exportDatabase() {
+        const a = document.createElement('a');
+        a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state, null, 2));
+        a.download = 'Respaldo_SantoTomas.json';
+        a.click();
+      },
+
+      importDatabase(ev) {
+        const f = ev.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (e) => {
+          try {
+            this.state = JSON.parse(e.target.result);
+            this.saveState();
+            this.resetCaptureForm();
+            this.notify('Datos importados correctamente.');
+          } catch (err) { this.notify('Archivo inválido', 'error'); }
+        };
+        r.readAsText(f);
+      },
+
+      clearAllDatabase() {
+        if (!confirm('¿Reiniciar todo en CERO?')) return;
+        this.state = { config: { nextFolio: 1001, currentViaje: 'Viaje General', defaultRateKg: 180 }, clientes: [], envios: [] };
+        this.saveState();
+        this.resetCaptureForm();
+      },
+
+      formatCurrency(v) {
+        return '$' + (Number(v) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      },
+
+      notify(msg, type = 'success') {
+        const c = document.getElementById('toastContainer');
+        const d = document.createElement('div');
+        d.className = `${type === 'error' ? 'bg-rose-600' : 'bg-slate-900 border border-amber-500'} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-bold`;
+        d.textContent = msg;
+        c.appendChild(d);
+        setTimeout(() => d.remove(), 3000);
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => App.init());
+  </script>
+</body>
+</html>
