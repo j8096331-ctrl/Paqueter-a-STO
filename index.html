@@ -2,30 +2,41 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ERP Logístico | Paquetería Santo Tomás Hueyotlipan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PAQUETERÍA "STO. TOMÁS" | Los Ángeles - Oregon</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f1f5f9;
+      background-color: #eef2f6;
       color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
     }
-    .font-mono-code {
-      font-family: 'JetBrains Mono', monospace;
+    .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    
+    /* Estilo clásico de la Nota Azul de Paquetería Sto. Tomás */
+    .nota-border { border: 2px solid #1d4ed8; }
+    .nota-header-bg { background-color: #1d4ed8; color: #ffffff; }
+    .nota-line-input {
+      border-bottom: 1.5px solid #93c5fd;
+      background: transparent;
+      transition: all 0.15s ease;
     }
-    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    .nota-line-input:focus {
+      border-bottom: 2px solid #1d4ed8;
+      background-color: #eff6ff;
+      outline: none;
+    }
+    .dotted-row {
+      border-bottom: 1px dotted #93c5fd;
+    }
 
-    /* Estilos exclusivos de impresión */
     @media print {
       body * { visibility: hidden !important; }
-      #printContainer, #printContainer * { visibility: visible !important; }
-      #printContainer {
+      #printArea, #printArea * { visibility: visible !important; }
+      #printArea {
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
@@ -39,71 +50,58 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
+<body class="min-h-screen flex flex-col pb-20 md:pb-6">
 
-  <!-- NOTIFICACIÓN FLOTANTE (TOAST) -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 no-print"></div>
+  <!-- NOTIFICACIONES FLOTANTES -->
+  <div id="toastBox" class="fixed top-4 right-4 z-50 flex flex-col gap-2 no-print"></div>
 
-  <!-- =================================================================
-       BARRA SUPERIOR CORPORATIVA
-       ================================================================= -->
-  <header class="bg-slate-950 text-white border-b border-slate-800 sticky top-0 z-40 shadow-xl no-print">
-    <div class="max-w-[1440px] mx-auto px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+  <!-- BARRA SUPERIOR CORPORATIVA (PC Y TABLET / MÓVIL) -->
+  <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-40 no-print border-b border-blue-800">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
       
-      <!-- Identidad de Marca -->
-      <div class="flex items-center gap-3.5">
-        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/20 font-black text-xl">
-          <i class="fa-solid fa-boxes-packing"></i>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white text-blue-900 flex items-center justify-center font-black text-lg shadow">
+          <i class="fa-solid fa-truck-fast"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">
-              Sistema Logístico Internacional MX ➔ USA
+            <h1 class="text-base sm:text-lg font-black tracking-tight uppercase">PAQUETERÍA "STO. TOMÁS"</h1>
+            <span class="hidden sm:inline-block bg-blue-800 text-blue-200 text-[10px] font-extrabold px-2 py-0.5 rounded border border-blue-700">
+              Los Ángeles - Oregon
             </span>
           </div>
-          <h1 class="text-lg md:text-xl font-black tracking-tight text-white mt-0.5">
-            Paquetería Santo Tomás Hueyotlipan
-          </h1>
+          <p class="text-[11px] text-blue-200 font-medium">
+            Tel. USA: 323 448 6554 &nbsp;|&nbsp; Tel. MEX: 224 100 1849
+          </p>
         </div>
       </div>
 
-      <!-- Navegación Central -->
-      <nav class="flex flex-wrap items-center gap-1 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
-        <button onclick="App.switchView('captura')" id="nav-captura" class="nav-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold transition flex items-center gap-2 bg-amber-500 text-slate-950 shadow">
-          <i class="fa-solid fa-file-circle-plus"></i>
-          <span>Recepción / Nueva Nota</span>
+      <!-- Navegación Desktop / Tablet -->
+      <nav class="hidden md:flex items-center gap-1.5 bg-blue-950/70 p-1 rounded-xl border border-blue-800">
+        <button onclick="App.switchTab('nota')" id="nav-nota" class="px-3.5 py-2 rounded-lg text-xs font-black transition flex items-center gap-1.5 bg-white text-blue-900 shadow">
+          <i class="fa-solid fa-file-pen"></i><span>Hacer Nota</span>
         </button>
-        <button onclick="App.switchView('usa')" id="nav-usa" class="nav-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
-          <i class="fa-solid fa-flag-usa"></i>
-          <span>Búsqueda y Reparto EE. UU.</span>
+        <button onclick="App.switchTab('usa')" id="nav-usa" class="px-3.5 py-2 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-magnifying-glass"></i><span>Buscar Notas (EE. UU.)</span>
         </button>
-        <button onclick="App.switchView('clientes')" id="nav-clientes" class="nav-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
-          <i class="fa-solid fa-address-book"></i>
-          <span>Directorio / Nuevo Viaje</span>
+        <button onclick="App.switchTab('clientes')" id="nav-clientes" class="px-3.5 py-2 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-users"></i><span>Clientes / Nuevo Viaje</span>
         </button>
-        <button onclick="App.switchView('manifiesto')" id="nav-manifiesto" class="nav-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white transition flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie"></i>
-          <span>Corte y Manifiesto</span>
+        <button onclick="App.switchTab('corte')" id="nav-corte" class="px-3.5 py-2 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-table-list"></i><span>Lista y Corte</span>
         </button>
       </nav>
 
-      <!-- Herramientas de Sistema y Tipo de Cambio -->
-      <div class="flex items-center gap-2">
-        <div class="hidden xl:flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-xs">
-          <span class="text-slate-400 font-medium">T.C. USD:</span>
-          <span class="text-emerald-400 font-bold">$</span>
-          <input type="number" id="globalExchangeRate" value="19.50" step="0.10" onchange="App.updateConfig()" class="w-14 bg-transparent text-white font-mono-code font-bold focus:outline-none text-right">
-        </div>
-        <button onclick="App.exportDatabase()" title="Descargar respaldo para enviar a EE. UU." class="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i>
-          <span class="hidden sm:inline">Respaldar</span>
+      <!-- Botones Respaldo -->
+      <div class="flex items-center gap-1.5">
+        <button onclick="App.exportBackup()" title="Descargar respaldo para enviar a EE. UU." class="bg-blue-800 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 border border-blue-600">
+          <i class="fa-solid fa-download text-emerald-300"></i><span class="hidden sm:inline">Respaldar</span>
         </button>
-        <label title="Cargar archivo de respaldo" class="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition">
-          <i class="fa-solid fa-cloud-arrow-up text-amber-400"></i>
-          <span class="hidden sm:inline">Importar</span>
-          <input type="file" accept=".json" class="hidden" onchange="App.importDatabase(event)">
+        <label title="Cargar respaldo en otro celular/PC" class="bg-blue-800 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 border border-blue-600 cursor-pointer">
+          <i class="fa-solid fa-upload text-amber-300"></i><span class="hidden sm:inline">Cargar</span>
+          <input type="file" accept=".json" class="hidden" onchange="App.importBackup(event)">
         </label>
-        <button onclick="App.clearAllDatabase()" title="Reiniciar sistema en cero" class="bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-2.5 py-2 rounded-lg text-xs font-semibold transition">
+        <button onclick="App.resetAllZero()" title="Dejar todo en CERO" class="bg-rose-800 hover:bg-rose-700 text-rose-100 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-rose-600">
           <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
@@ -111,470 +109,507 @@
     </div>
   </header>
 
-  <!-- =================================================================
-       CONTENEDOR PRINCIPAL DE TRABAJO
-       ================================================================= -->
-  <main class="max-w-[1440px] w-full mx-auto px-4 lg:px-8 py-6 flex-1 space-y-6 no-print">
+  <!-- BARRA DE NAVEGACIÓN INFERIOR ESPECIAL PARA CELULAR -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-blue-950 text-white border-t border-blue-800 z-40 grid grid-cols-4 no-print shadow-2xl">
+    <button onclick="App.switchTab('nota')" id="mnav-nota" class="py-2.5 flex flex-col items-center justify-center text-[11px] font-black text-amber-400 bg-blue-900/60">
+      <i class="fa-solid fa-file-pen text-base mb-0.5"></i><span>Hacer Nota</span>
+    </button>
+    <button onclick="App.switchTab('usa')" id="mnav-usa" class="py-2.5 flex flex-col items-center justify-center text-[11px] font-semibold text-blue-200">
+      <i class="fa-solid fa-magnifying-glass text-base mb-0.5"></i><span>Buscar USA</span>
+    </button>
+    <button onclick="App.switchTab('clientes')" id="mnav-clientes" class="py-2.5 flex flex-col items-center justify-center text-[11px] font-semibold text-blue-200">
+      <i class="fa-solid fa-users text-base mb-0.5"></i><span>Clientes</span>
+    </button>
+    <button onclick="App.switchTab('corte')" id="mnav-corte" class="py-2.5 flex flex-col items-center justify-center text-[11px] font-semibold text-blue-200">
+      <i class="fa-solid fa-table-list text-base mb-0.5"></i><span>Corte</span>
+    </button>
+  </nav>
 
-    <!-- TARJETAS DE INDICADORES EN TIEMPO REAL (INICIAN EN 0) -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-      <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl w-full mx-auto px-2 sm:px-6 py-4 flex-1 space-y-4 no-print">
+
+    <!-- RESUMEN SUPERIOR EN CERO -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between">
         <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Total Envíos</span>
-          <span id="kpi-total-envios" class="text-2xl font-black text-slate-900 font-mono-code">0</span>
-          <span id="kpi-entregados-sub" class="text-[11px] text-slate-500 block mt-0.5">0 entregados en EE. UU.</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Notas del Viaje</span>
+          <span id="statNotas" class="text-lg sm:text-xl font-black text-slate-900 font-mono-num">0</span>
         </div>
-        <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-box"></i>
-        </div>
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center"><i class="fa-solid fa-receipt"></i></div>
       </div>
-
-      <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between">
         <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Peso Total Carga</span>
-          <span id="kpi-peso-total" class="text-2xl font-black text-slate-900 font-mono-code">0.00 kg</span>
-          <span id="kpi-libras-sub" class="text-[11px] text-slate-500 block mt-0.5">0.00 lbs aprox.</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Total en Notas</span>
+          <span id="statTotal" class="text-lg sm:text-xl font-black text-blue-800 font-mono-num">$0</span>
         </div>
-        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-weight-hanging"></i>
-        </div>
+        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center"><i class="fa-solid fa-sack-dollar"></i></div>
       </div>
-
-      <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between">
         <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Cobrado / Anticipos</span>
-          <span id="kpi-cobrado" class="text-2xl font-black text-emerald-600 font-mono-code">$0.00</span>
-          <span class="text-[11px] text-slate-500 block mt-0.5">Ingresos liquidados</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Pagado / Anticipos</span>
+          <span id="statPagado" class="text-lg sm:text-xl font-black text-emerald-600 font-mono-num">$0</span>
         </div>
-        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-cash-register"></i>
-        </div>
+        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-check-double"></i></div>
       </div>
-
-      <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between">
         <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Por Cobrar EE. UU.</span>
-          <span id="kpi-pendiente" class="text-2xl font-black text-rose-600 font-mono-code">$0.00</span>
-          <span id="kpi-pendiente-usd" class="text-[11px] font-semibold text-rose-500 block mt-0.5">$0.00 USD</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Por Cobrar EE. UU.</span>
+          <span id="statPendiente" class="text-lg sm:text-xl font-black text-rose-600 font-mono-num">$0</span>
         </div>
-        <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-hand-holding-dollar"></i>
-        </div>
-      </div>
-
-      <div class="col-span-2 lg:col-span-1 bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
-        <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Clientes Guardados</span>
-          <span id="kpi-clientes" class="text-2xl font-black text-indigo-600 font-mono-code">0</span>
-          <span class="text-[11px] text-slate-500 block mt-0.5">Con historial activo</span>
-        </div>
-        <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-users"></i>
-        </div>
+        <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-hand-holding-dollar"></i></div>
       </div>
     </div>
 
     <!-- =================================================================
-         VISTA 1: RECEPCIÓN Y CAPTURA DE NOTA (TABLA AVANZADA)
+         SECCIÓN 1: LA NOTA OFICIAL IDÉNTICA AL TALONARIO FÍSICO
          ================================================================= -->
-    <section id="view-captura" class="space-y-6">
-      
-      <!-- Buscador Inteligente de Cliente Existente para "Nuevo Viaje" -->
-      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 md:p-5 text-white shadow-lg border border-slate-700 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-        <div class="flex items-start sm:items-center gap-3.5">
-          <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-400 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-user-clock text-lg"></i>
+    <section id="tab-nota" class="space-y-4">
+
+      <!-- Barra de búsqueda rápida de cliente guardado ("Nuevo Viaje") -->
+      <div class="bg-white p-3.5 rounded-2xl border border-blue-200 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold shrink-0">
+            <i class="fa-solid fa-user-check"></i>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h2 class="font-extrabold text-sm md:text-base">Buscador Rápido de Clientes Frecuentes (Modo Nuevo Viaje)</h2>
-              <span id="editingModeBadge" class="hidden bg-rose-500 text-white text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full animate-pulse">
-                Editando Nota Existente
-              </span>
-            </div>
-            <p class="text-xs text-slate-300 mt-0.5">
-              Si la persona ya ha mandado antes, escríbela aquí para rellenar automáticamente sus datos y agregar este paquete a su historial.
-            </p>
+            <h2 class="text-xs sm:text-sm font-black text-slate-900">¿Persona ya registrada? Búscala aquí para Nuevo Viaje</h2>
+            <p class="text-[11px] text-slate-500">Se llena sola la nota con sus datos. Usa <strong>Enter ↵</strong> para bajar de renglón en renglón igual que en tu libreta.</p>
           </div>
         </div>
-
-        <div class="relative w-full lg:w-[430px]">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
-          <input
-            type="text"
-            id="quickSearchClientInput"
-            oninput="App.handleQuickClientAutocomplete(this.value)"
-            placeholder="Buscar cliente por nombre, teléfono o familiar en EE. UU..."
-            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-amber-400 transition"
-          >
-          <div id="quickSearchDropdown" class="hidden absolute left-0 right-0 mt-1.5 bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-200 max-h-72 overflow-y-auto z-50 divide-y divide-slate-100"></div>
+        <div class="relative w-full md:w-96">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+          <input type="text" id="quickPersonSearch" oninput="App.searchQuickPerson(this.value)" placeholder="Buscar por nombre de quien recibe o quien envía..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold focus:outline-none focus:border-blue-600">
+          <div id="quickPersonDropdown" class="hidden absolute left-0 right-0 mt-1 bg-white rounded-xl shadow-2xl border border-slate-200 max-h-60 overflow-y-auto z-50 divide-y divide-slate-100"></div>
         </div>
       </div>
 
-      <!-- Tarjeta Principal del Formulario de Nota -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <!-- HOJA DE NOTA IDÉNTICA A LA FOTO DE PAQUETERÍA "STO. TOMÁS" -->
+      <div class="bg-white rounded-2xl shadow-md nota-border overflow-hidden max-w-4xl mx-auto">
         
-        <!-- Encabezado de Folio y Viaje -->
-        <div class="bg-slate-50/90 px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="bg-slate-950 text-white px-3.5 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
-              <span class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Folio Nota:</span>
-              <span id="formFolioDisplay" class="font-mono-code font-black text-amber-400 text-base">STH-1001</span>
+        <input type="hidden" id="editingNotaId" value="">
+        <input type="hidden" id="linkedClientId" value="">
+
+        <!-- CABECERA DE LA NOTA: PAQUETERÍA "STO. TOMÁS" + NOTA NO. -->
+        <div class="p-4 sm:p-6 bg-gradient-to-b from-blue-50/70 to-white border-b-2 border-blue-700">
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-blue-200">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-black text-blue-800 tracking-tight uppercase">
+                PAQUETERÍA "STO. TOMÁS"
+              </h2>
+              <p class="text-xs sm:text-sm font-extrabold text-blue-700 tracking-widest uppercase">
+                ─── Los Ángeles - Oregon ───
+              </p>
             </div>
-            <span id="linkedClientBadge" class="hidden bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-              <i class="fa-solid fa-link"></i>
-              <span id="linkedClientText">Cliente vinculado</span>
+
+            <div class="flex items-center gap-3">
+              <!-- Caja de NOTA NO. igual a la esquina de la foto -->
+              <div class="border-2 border-blue-800 rounded-xl overflow-hidden flex items-center bg-white shadow-2xs">
+                <div class="bg-blue-800 text-white px-3 py-2 text-[11px] font-black uppercase tracking-wider">
+                  NOTA NO.
+                </div>
+                <input
+                  type="number"
+                  id="notaFolio"
+                  value="1500"
+                  class="w-20 sm:w-24 px-2 py-1.5 text-center font-mono-num font-black text-lg text-rose-700 focus:outline-none"
+                  title="Número de Nota (puedes escribir el folio de tu talonario)"
+                >
+              </div>
+              <button type="button" onclick="App.clearNotaForm()" class="text-xs font-bold text-slate-500 hover:text-rose-600 px-2.5 py-2 rounded-lg border border-slate-200 bg-white">
+                <i class="fa-solid fa-eraser mr-1"></i>Limpiar
+              </button>
+            </div>
+          </div>
+
+          <!-- DATOS DE ARRIBA DE LA NOTA: Nombre (Recibe), Destino, Teléfono, Fecha, Recibió -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-4 gap-y-3 pt-4 text-sm">
+            
+            <!-- Nombre (Quien recibe en USA) -->
+            <div class="sm:col-span-8 flex items-end gap-2">
+              <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Nombre:</label>
+              <input
+                type="text"
+                id="recibeNombre"
+                data-enter-next="recibeDestino"
+                placeholder="Nombre de quien recibe el paquete (Enter ↵)"
+                class="enter-field nota-line-input w-full font-bold text-slate-900 px-2 py-1 text-base sm:text-lg"
+              >
+            </div>
+
+            <!-- Destino (Los Ángeles / Oregon / etc.) -->
+            <div class="sm:col-span-4 flex items-end gap-2">
+              <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Destino:</label>
+              <input
+                type="text"
+                id="recibeDestino"
+                list="destinosSugeridos"
+                data-enter-next="recibeTel"
+                placeholder="Ej. Oregon / Los Ángeles"
+                class="enter-field nota-line-input w-full font-bold text-slate-900 px-2 py-1 text-base"
+              >
+              <datalist id="destinosSugeridos">
+                <option value="Oregon">
+                <option value="Los Ángeles">
+                <option value="Salem, Oregon">
+                <option value="Portland, Oregon">
+                <option value="California">
+              </datalist>
+            </div>
+
+            <!-- Teléfono USA -->
+            <div class="sm:col-span-5 flex items-end gap-2">
+              <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Teléfono:</label>
+              <input
+                type="tel"
+                id="recibeTel"
+                data-enter-next="recibioEncargado"
+                placeholder="Ej. 323 448 6554"
+                class="enter-field nota-line-input w-full font-mono-num font-bold text-slate-900 px-2 py-1 text-base"
+              >
+            </div>
+
+            <!-- Fecha -->
+            <div class="sm:col-span-3 flex items-end gap-2">
+              <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Fecha:</label>
+              <input
+                type="text"
+                id="notaFecha"
+                class="nota-line-input w-full font-bold text-slate-800 px-2 py-1 text-sm text-center"
+              >
+            </div>
+
+            <!-- Recibió (Ej. OSCAR) -->
+            <div class="sm:col-span-4 flex items-end gap-2">
+              <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Recibió:</label>
+              <input
+                type="text"
+                id="recibioEncargado"
+                data-enter-next="fastCant"
+                placeholder="Ej. OSCAR"
+                class="enter-field nota-line-input w-full font-bold text-slate-900 uppercase px-2 py-1 text-sm"
+              >
+            </div>
+
+          </div>
+        </div>
+
+        <!-- =========================================================
+             BARRA DE CAPTURA RÁPIDA DE RENGLONES (COMO EN LA NOTA DE PAPEL)
+             ========================================================= -->
+        <div class="bg-blue-50/90 p-3 sm:p-4 border-b-2 border-blue-700 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-black uppercase text-blue-950 flex items-center gap-1.5">
+              <i class="fa-solid fa-Down-long text-blue-700"></i>
+              <span>Agregar renglón a la nota (Usa Enter ↵ para brincar de casilla y bajar a la tabla)</span>
+            </span>
+            <span class="text-[11px] font-bold text-blue-800 bg-blue-100 px-2.5 py-0.5 rounded-full">
+              Ej: Cant: "2" | Unidad: "K." | Descripción: "Mole" | Bulto: "2-B" | Importe: "200"
             </span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center gap-2">
-              <label class="text-xs font-bold uppercase text-slate-500">Nombre de Salida / Viaje:</label>
+          <!-- Botones rápidos de abreviaturas exactas de la nota de tu papá -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <span class="text-[11px] font-extrabold text-slate-500 mr-1">Productos frecuentes:</span>
+            <button type="button" onclick="App.fillQuickRow('2', 'K.', 'Mole', '2-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">K. Mole</button>
+            <button type="button" onclick="App.fillQuickRow('3', 'K.', 'Quesillo', '3-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">K. Quesillo</button>
+            <button type="button" onclick="App.fillQuickRow('1', 'L.', 'Chapulines', '1-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">L. Chapulines</button>
+            <button type="button" onclick="App.fillQuickRow('2', 'K.', 'Cecina', '2-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">K. Cecina</button>
+            <button type="button" onclick="App.fillQuickRow('1 1/2', 'K.', 'Barbacoa', '1-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">K. Barbacoa</button>
+            <button type="button" onclick="App.fillQuickRow('2', '', 'Pan Fiesta', '2-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">Pan Fiesta</button>
+            <button type="button" onclick="App.fillQuickRow('20', '', 'Tlacoyos', '2-B', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">Tlacoyos</button>
+            <button type="button" onclick="App.fillQuickRow('1', 'F.', 'Medicamento: ', '1-C', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">F. / Caja Medicina</button>
+            <button type="button" onclick="App.fillQuickRow('1', '', 'Acta / Documento', '1-Sobre', '')" class="bg-white hover:bg-blue-100 border border-blue-300 text-blue-950 font-bold px-2.5 py-1 rounded-lg">1-Sobre</button>
+          </div>
+
+          <!-- Casillas de captura con Enter -->
+          <div class="grid grid-cols-12 gap-2 items-end bg-white p-2.5 sm:p-3 rounded-xl border border-blue-300 shadow-2xs">
+            
+            <!-- CANTIDAD (Acepta 1, 2, 1 1/2, 50...) -->
+            <div class="col-span-3 sm:col-span-2">
+              <label class="block text-[10px] font-black uppercase text-blue-900 mb-1">CANTIDAD</label>
               <input
                 type="text"
-                id="formViaje"
-                placeholder="Ej. Viaje 15 Octubre"
-                class="border border-slate-300 rounded-xl px-3 py-1.5 text-sm font-bold text-slate-800 focus:outline-none focus:border-amber-500 bg-white"
+                id="fastCant"
+                data-enter-next="fastPrefijo"
+                placeholder="2, 1 1/2, 20"
+                class="enter-row w-full border-2 border-slate-300 rounded-lg px-2 py-2 text-center font-mono-num font-black text-sm sm:text-base focus:outline-none focus:border-blue-700"
               >
             </div>
-            <button type="button" onclick="App.resetCaptureForm()" class="text-xs font-bold text-slate-500 hover:text-rose-600 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-rose-200 bg-white transition flex items-center gap-1.5">
-              <i class="fa-solid fa-rotate-left"></i> Limpiar Todo
-            </button>
+
+            <!-- UNIDAD / PREFIJO (K., L., F., o vacío) -->
+            <div class="col-span-3 sm:col-span-2">
+              <label class="block text-[10px] font-black uppercase text-blue-900 mb-1">TIPO (OPC.)</label>
+              <select
+                id="fastPrefijo"
+                data-enter-next="fastDesc"
+                class="enter-row w-full border-2 border-slate-300 rounded-lg px-1.5 py-2 text-xs sm:text-sm font-black bg-white focus:outline-none focus:border-blue-700"
+              >
+                <option value="K.">K. (Kilos)</option>
+                <option value="">(Directo / Pzas)</option>
+                <option value="L.">L. (Litros)</option>
+                <option value="F.">F. (Frasco)</option>
+                <option value="Botella">Botella</option>
+              </select>
+            </div>
+
+            <!-- DESCRIPCIÓN (Mole, Quesillo, Paracetamol, Botella Tequila...) -->
+            <div class="col-span-6 sm:col-span-4">
+              <label class="block text-[10px] font-black uppercase text-blue-900 mb-1">DESCRIPCIÓN (QUÉ ENVÍA)</label>
+              <input
+                type="text"
+                id="fastDesc"
+                data-enter-next="fastEmpaque"
+                placeholder="Ej. Mole, Quesillo, Paracetamol..."
+                class="enter-row w-full border-2 border-slate-300 rounded-lg px-2.5 py-2 text-sm sm:text-base font-bold focus:outline-none focus:border-blue-700"
+              >
+            </div>
+
+            <!-- BULTOS / EMPAQUE (2-B, 3-B, 1-C, 1-Sobre) -->
+            <div class="col-span-5 sm:col-span-2">
+              <label class="block text-[10px] font-black uppercase text-blue-900 mb-1">EMPAQUE (2-B, 1-C)</label>
+              <input
+                type="text"
+                id="fastEmpaque"
+                list="empaquesList"
+                data-enter-next="fastImporte"
+                placeholder="Ej. 2-B, 1-C, 1-Sobre"
+                class="enter-row w-full border-2 border-slate-300 rounded-lg px-2 py-2 text-center font-mono-num font-bold text-xs sm:text-sm focus:outline-none focus:border-blue-700"
+              >
+              <datalist id="empaquesList">
+                <option value="1-B">
+                <option value="2-B">
+                <option value="3-B">
+                <option value="4-B">
+                <option value="1-C">
+                <option value="2-C">
+                <option value="1-Sobre">
+              </datalist>
+            </div>
+
+            <!-- IMPORTE ($) -->
+            <div class="col-span-5 sm:col-span-2">
+              <label class="block text-[10px] font-black uppercase text-blue-900 mb-1">IMPORTE ($)</label>
+              <input
+                type="number"
+                id="fastImporte"
+                data-enter-next="COMMIT_ROW"
+                placeholder="Ej. 200, 390"
+                class="enter-row w-full border-2 border-slate-300 rounded-lg px-2 py-2 text-right font-mono-num font-black text-sm sm:text-base text-blue-950 focus:outline-none focus:border-blue-700"
+              >
+            </div>
+
+            <!-- Botón Agregar en móvil o PC -->
+            <div class="col-span-2 sm:col-span-12 flex justify-end pt-1">
+              <button
+                type="button"
+                onclick="App.addFastRow()"
+                class="w-full sm:w-auto bg-blue-800 hover:bg-blue-700 text-white font-black px-5 py-2 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow"
+              >
+                <i class="fa-solid fa-plus"></i>
+                <span class="hidden sm:inline">Anexar Renglón (Enter ↵)</span>
+              </button>
+            </div>
+
           </div>
         </div>
 
-        <!-- Cuerpo del Formulario -->
-        <div class="p-6 space-y-6">
-          <input type="hidden" id="editingShipmentId" value="">
-          <input type="hidden" id="selectedClientId" value="">
-
-          <!-- BLOQUE DUAL: QUIÉN ENVÍA Y QUIÉN RECIBE -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <!-- Columna 1: Remitente (Quién Envía en México) -->
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
-              <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-                <div class="flex items-center gap-2">
-                  <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">MX</span>
-                  <div>
-                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-800">1. Datos de Quién Envía (Remitente)</h3>
-                    <p class="text-[11px] text-slate-500">Persona que entrega el paquete en sucursal</p>
+        <!-- =========================================================
+             TABLA CENTRAL DE LA NOTA: CANTIDAD | DESCRIPCIÓN | IMPORTE
+             ========================================================= -->
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="nota-header-bg text-xs sm:text-sm font-black uppercase tracking-wider">
+                <th class="py-2.5 px-3 w-24 sm:w-28 text-center border-r border-blue-500">CANTIDAD</th>
+                <th class="py-2.5 px-3 text-left border-r border-blue-500">
+                  <div class="flex justify-between items-center">
+                    <span>DESCRIPCIÓN</span>
+                    <span class="text-[11px] font-bold text-blue-200 pr-2">EMPAQUE (B / C / SOBRE)</span>
                   </div>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div class="sm:col-span-2">
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nombre Completo de Quien Envía *</label>
-                  <input type="text" id="remNombre" placeholder="Ej. Sra. Teresa Morales..." class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold focus:outline-none focus:border-amber-500 bg-white">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Teléfono / WhatsApp (México) *</label>
-                  <input type="tel" id="remTel" placeholder="Ej. 222 123 4567" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-medium focus:outline-none focus:border-amber-500 bg-white">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Localidad / Municipio Origen</label>
-                  <input type="text" id="remOrigen" value="Santo Tomás Hueyotlipan, Pue." class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-medium focus:outline-none focus:border-amber-500 bg-white">
-                </div>
-              </div>
-            </div>
-
-            <!-- Columna 2: Destinatario (Quién Recibe en Estados Unidos) -->
-            <div class="rounded-2xl border border-blue-200 bg-blue-50/30 p-5 space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-blue-200 pb-3">
-                <div class="flex items-center gap-2">
-                  <span class="w-7 h-7 rounded-lg bg-blue-700 text-white flex items-center justify-center text-xs font-bold">US</span>
-                  <div>
-                    <h3 class="text-xs font-black uppercase tracking-wider text-blue-950">2. Datos de Quién Recibe en EE. UU.</h3>
-                    <p class="text-[11px] text-blue-700/80">Información clave para localizarlo en el reparto</p>
-                  </div>
-                </div>
-                <select id="savedReceiversSelect" onchange="App.pickSavedReceiver(this.value)" class="hidden text-xs bg-white border border-blue-300 text-blue-900 font-bold rounded-lg px-2.5 py-1">
-                  <option value="">-- Elegir destinatario frecuente --</option>
-                </select>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div class="sm:col-span-2">
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nombre Completo de Quien Recibe *</label>
-                  <input type="text" id="destNombre" placeholder="Ej. Juan Carlos Morales" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold focus:outline-none focus:border-blue-600 bg-white">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Teléfono en EE. UU. *</label>
-                  <input type="tel" id="destTel" placeholder="Ej. +1 (323) 555-0199" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-semibold focus:outline-none focus:border-blue-600 bg-white">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Estado / Ciudad en EE. UU. *</label>
-                  <input type="text" id="destCiudad" placeholder="Ej. Los Ángeles, CA / Passaic, NJ" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-medium focus:outline-none focus:border-blue-600 bg-white">
-                </div>
-                <div class="sm:col-span-2">
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Dirección Exacta / Punto de Entrega (Opcional)</label>
-                  <input type="text" id="destDireccion" placeholder="Calle, Número, Zip Code o Punto de reunión..." class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-medium focus:outline-none focus:border-blue-600 bg-white">
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- BLOQUE 3: TABLA DINÁMICA DE CONTENIDO (QUÉ ENVÍA, KG/LB, PRECIO) -->
-          <div class="space-y-3 pt-2">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                  <i class="fa-solid fa-table-list text-amber-500 text-sm"></i>
-                  <span>3. Tabla de Artículos Enviados (Qué envía, Peso y Precio)</span>
-                </h3>
-                <p class="text-xs text-slate-500">Registra cada producto en su renglón. Puedes cobrar por Kilo/Libra o por Pieza/Tarifa Fija.</p>
-              </div>
-
-              <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl text-xs">
-                  <span class="font-bold text-slate-600">Precio Base $/Kg:</span>
-                  <input type="number" id="defaultRatePerKg" value="180" step="10" class="w-16 bg-white border border-slate-300 rounded px-1.5 py-0.5 text-center font-bold">
-                </div>
-                <button type="button" onclick="App.addItemRow()" class="bg-slate-950 hover:bg-slate-800 text-white text-xs font-extrabold px-4 py-2 rounded-xl shadow flex items-center gap-2 transition">
-                  <i class="fa-solid fa-plus text-amber-400"></i> Agregar Renglón
-                </button>
-              </div>
-            </div>
-
-            <!-- Botones de Inserción Rápida -->
-            <div class="flex flex-wrap items-center gap-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-              <span class="text-[11px] font-extrabold uppercase text-slate-400 mr-1"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i>Inserción rápida:</span>
-              <button type="button" onclick="App.quickInsertItem('Queso fresco / cincho', 'Alimentos', 1, 'kg')" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Queso</button>
-              <button type="button" onclick="App.quickInsertItem('Pan tradicional', 'Alimentos', 1, 'kg')" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Pan</button>
-              <button type="button" onclick="App.quickInsertItem('Mole en pasta / Pipián', 'Alimentos', 1, 'kg')" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Mole</button>
-              <button type="button" onclick="App.quickInsertItem('Carnes secas / Cecina / Longaniza', 'Perecedero', 1, 'kg')" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Cecina / Carne</button>
-              <button type="button" onclick="App.quickInsertItem('Ropa y Calzado', 'Ropa', 1, 'kg')" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Ropa</button>
-              <button type="button" onclick="App.quickInsertItem('Medicamento / Tratamiento', 'Medicinas', 0.3, 'fijo', 350)" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Medicina (Fijo)</button>
-              <button type="button" onclick="App.quickInsertItem('Sobre / Documentos Oficiales', 'Documentos', 0.1, 'fijo', 250)" class="text-xs bg-white hover:bg-amber-50 text-slate-700 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition">+ Documentos</button>
-            </div>
-
-            <!-- Tabla de Renglones -->
-            <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs custom-scroll">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="bg-slate-900 text-white text-[11px] font-extrabold uppercase tracking-wider">
-                    <th class="py-3 px-3 w-12 text-center">#</th>
-                    <th class="py-3 px-3 w-20 text-center">Cant.</th>
-                    <th class="py-3 px-3 min-w-[240px]">¿Qué envía? (Descripción exacta del contenido)</th>
-                    <th class="py-3 px-3 w-36">Categoría</th>
-                    <th class="py-3 px-3 w-28 text-right">Peso</th>
-                    <th class="py-3 px-3 w-24 text-center">Unidad</th>
-                    <th class="py-3 px-3 w-36">Tipo Cobro</th>
-                    <th class="py-3 px-3 w-32 text-right">Precio ($)</th>
-                    <th class="py-3 px-3 w-32 text-right">Importe</th>
-                    <th class="py-3 px-3 w-12 text-center"></th>
-                  </tr>
-                </thead>
-                <tbody id="itemsTableBody" class="divide-y divide-slate-200 text-sm bg-white">
-                  <!-- Renglones generados dinámicamente -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- BLOQUE 4: OBSERVACIONES, LIQUIDACIÓN Y GUARDADO -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-slate-200">
-            
-            <!-- Configuración adicional de la caja -->
-            <div class="lg:col-span-7 space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1">Total de Cajas / Bultos</label>
-                  <input type="number" id="formNumCajas" value="1" min="1" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1">Método de Pago (MX)</label>
-                  <select id="formMetodoPago" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold bg-white">
-                    <option value="Efectivo">Efectivo en Sucursal</option>
-                    <option value="Transferencia">Transferencia / Depósito</option>
-                    <option value="Por Cobrar en EE. UU.">Paga al recibir en EE. UU.</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1">Estado Inicial del Paquete</label>
-                  <select id="formEstadoEnvio" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold bg-white">
-                    <option value="Recibido en Sucursal">Recibido en Sucursal (MX)</option>
-                    <option value="En Tránsito a EE. UU.">En Tránsito a EE. UU.</option>
-                    <option value="Entregado en EE. UU.">Entregado en EE. UU.</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1">Observaciones / Indicaciones Especiales (Aparecen en la Nota y en EE. UU.)</label>
-                <textarea id="formObservaciones" rows="2" placeholder="Ej. Producto delicado, refrigerar al llegar, entregar únicamente con identificación..." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
-              </div>
-            </div>
-
-            <!-- Panel Financiero de la Nota -->
-            <div class="lg:col-span-5 bg-slate-950 text-white rounded-2xl p-5 space-y-3.5 shadow-xl border border-slate-800">
-              <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-800 pb-2.5">
-                <span class="uppercase font-bold tracking-wider">Resumen de Báscula y Caja</span>
-                <span id="summaryWeightDisplay" class="font-mono-code font-bold text-amber-400 text-sm">0.00 kg (0.00 lb)</span>
-              </div>
-
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-slate-300 font-medium">Subtotal de Artículos:</span>
-                <span id="summarySubtotal" class="font-mono-code font-bold text-base text-white">$0.00</span>
-              </div>
-
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-slate-300 font-medium">Cargo Extra / Emplayado ($):</span>
-                <input type="number" id="formCargoExtra" value="0" min="0" step="10" oninput="App.recalculateFormTotals()" class="w-28 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-right font-mono-code font-bold text-white focus:outline-none focus:border-amber-400">
-              </div>
-
-              <div class="flex justify-between items-center pt-2 border-t border-slate-800">
-                <span class="text-base font-extrabold text-white">TOTAL DEL ENVÍO (MXN):</span>
-                <span id="summaryGranTotal" class="font-mono-code font-black text-2xl text-amber-400">$0.00</span>
-              </div>
-
-              <div class="flex justify-between items-center text-sm pt-2 border-t border-slate-800">
-                <span class="text-emerald-400 font-bold">Deja Pagado / Anticipo ($):</span>
-                <div class="flex items-center gap-1.5">
-                  <button type="button" onclick="App.payFullAmount()" title="Marcar como 100% pagado" class="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-2 py-1 rounded font-bold">
-                    Todo Pagado
-                  </button>
-                  <input type="number" id="formAnticipo" value="0" min="0" step="10" oninput="App.recalculateFormTotals()" class="w-28 bg-slate-900 border border-emerald-600/60 rounded-lg px-2.5 py-1 text-right font-mono-code font-bold text-emerald-400 focus:outline-none focus:border-emerald-400">
-                </div>
-              </div>
-
-              <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                <div>
-                  <span class="text-xs font-extrabold uppercase text-rose-400 block">Saldo por Cobrar en EE. UU.:</span>
-                  <span id="summarySaldoUSD" class="text-xs font-mono-code text-slate-400">Equivalente: $0.00 USD</span>
-                </div>
-                <span id="summarySaldoMXN" class="font-mono-code font-black text-xl text-rose-400">$0.00</span>
-              </div>
-
-              <div class="pt-1 flex flex-col sm:flex-row gap-2">
-                <button type="button" onclick="App.saveShipment('ticket')" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
-                  <i class="fa-solid fa-floppy-disk"></i>
-                  <span id="btnSaveMainText">Guardar Nota y Generar Comprobante</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
+                </th>
+                <th class="py-2.5 px-3 w-28 sm:w-36 text-right">IMPORTE</th>
+                <th class="py-2.5 px-2 w-10 text-center"></th>
+              </tr>
+            </thead>
+            <tbody id="notaRowsBody" class="text-sm sm:text-base">
+              <!-- Renglones dinámicos estilo libreta -->
+            </tbody>
+          </table>
         </div>
+
+        <!-- =========================================================
+             PARTE INFERIOR DE LA NOTA: QUIÉN ENVÍA + TOTAL $
+             ========================================================= -->
+        <div class="p-4 sm:p-6 bg-slate-50 border-t-2 border-blue-800">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            
+            <!-- Recuadro Izquierdo: Envía, Teléfono, Origen (Igual que abajo en la nota de papel) -->
+            <div class="lg:col-span-7 border-2 border-blue-800 rounded-xl p-4 bg-white space-y-3 flex flex-col justify-center">
+              <div class="flex items-end gap-2">
+                <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Envía:</label>
+                <input
+                  type="text"
+                  id="enviaNombre"
+                  data-enter-next="enviaTel"
+                  placeholder="Ej. La Güera / Nombre de quien manda"
+                  class="enter-field nota-line-input w-full font-bold text-slate-900 px-2 py-1 text-base"
+                >
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex items-end gap-2">
+                  <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Teléfono:</label>
+                  <input
+                    type="tel"
+                    id="enviaTel"
+                    data-enter-next="enviaOrigen"
+                    placeholder="Ej. 224 100 1849"
+                    class="enter-field nota-line-input w-full font-mono-num font-bold text-slate-900 px-2 py-1 text-sm"
+                  >
+                </div>
+                <div class="flex items-end gap-2">
+                  <label class="font-extrabold text-blue-900 text-xs sm:text-sm shrink-0">Origen:</label>
+                  <input
+                    type="text"
+                    id="enviaOrigen"
+                    value="Sto. Tomás Hueyotlipan"
+                    placeholder="Ej. Teca / Sto. Tomás"
+                    class="nota-line-input w-full font-bold text-slate-900 px-2 py-1 text-sm"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Recuadro Derecho: TOTAL $, Anticipo y Botón Guardar -->
+            <div class="lg:col-span-5 flex flex-col justify-between gap-3">
+              
+              <!-- Caja oficial TOTAL $ -->
+              <div class="border-2 border-blue-800 rounded-xl p-3.5 bg-white space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-base sm:text-lg font-black text-blue-900 uppercase">TOTAL $</span>
+                  <span id="notaTotalDisplay" class="font-mono-num font-black text-2xl sm:text-3xl text-slate-950">$0</span>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-200 text-xs">
+                  <span class="font-bold text-emerald-700">Deja Pagado / Anticipo ($):</span>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="App.markFullPaid()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-extrabold px-2 py-1 rounded">
+                      Pagó Todo
+                    </button>
+                    <input
+                      type="number"
+                      id="notaAnticipo"
+                      value="0"
+                      min="0"
+                      oninput="App.recalcNotaTotal()"
+                      class="w-24 border border-slate-300 rounded-lg px-2 py-1 text-right font-mono-num font-bold text-sm text-emerald-700"
+                    >
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-1 text-xs">
+                  <span class="font-black text-rose-600 uppercase">Resta por Cobrar:</span>
+                  <span id="notaRestaDisplay" class="font-mono-num font-black text-base text-rose-600">$0</span>
+                </div>
+              </div>
+
+              <!-- Botón Guardar Nota -->
+              <button
+                type="button"
+                onclick="App.saveNota()"
+                class="w-full bg-blue-800 hover:bg-blue-700 text-white font-black py-3.5 px-5 rounded-xl shadow-lg text-sm sm:text-base flex items-center justify-center gap-2 transition"
+              >
+                <i class="fa-solid fa-floppy-disk text-amber-300"></i>
+                <span id="btnSaveNotaLabel">Guardar Nota y Ver Talón Oficial</span>
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </section>
 
     <!-- =================================================================
-         VISTA 2: BUSCADOR Y REPARTO EN ESTADOS UNIDOS
+         SECCIÓN 2: BUSCADOR DE NOTAS EN ESTADOS UNIDOS
          ================================================================= -->
-    <section id="view-usa" class="hidden space-y-6">
-      
-      <!-- Panel de Búsqueda Instantánea para EE. UU. -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-4">
+    <section id="tab-usa" class="hidden space-y-4">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <span class="text-xs font-extrabold uppercase tracking-wider text-blue-600 block">Módulo Operativo en Estados Unidos</span>
-            <h2 class="text-xl font-black text-slate-900">Localizador de Notas, Destinatarios y Cobros en Entrega</h2>
+            <span class="text-[11px] font-black uppercase text-blue-700 block">Reparto en Los Ángeles - Oregon</span>
+            <h2 class="text-base sm:text-lg font-black text-slate-900">Buscar Nota por Número, Nombre o Producto</h2>
           </div>
-
-          <div class="flex flex-wrap items-center gap-2.5">
-            <select id="usaFilterViaje" onchange="App.renderUSAShipments()" class="border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold bg-slate-50">
-              <option value="ALL">Todos los Viajes</option>
-            </select>
-            <select id="usaFilterStatus" onchange="App.renderUSAShipments()" class="border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold bg-slate-50">
-              <option value="ALL">Todos los Estados</option>
-              <option value="Recibido en Sucursal">Recibido en Sucursal (MX)</option>
-              <option value="En Tránsito a EE. UU.">En Tránsito a EE. UU.</option>
-              <option value="Entregado en EE. UU.">Entregado en EE. UU.</option>
-            </select>
-            <select id="usaFilterPayment" onchange="App.renderUSAShipments()" class="border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold bg-slate-50">
-              <option value="ALL">Pagados y Con Saldo</option>
-              <option value="PENDING">Solo Con Saldo Pendiente</option>
-              <option value="PAID">Solo Pagados al 100%</option>
-            </select>
-          </div>
+          <select id="usaFilterPay" onchange="App.renderUSANotas()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold bg-slate-50">
+            <option value="ALL">Todas las Notas</option>
+            <option value="PENDING">Con Saldo por Cobrar</option>
+            <option value="PAID">Pagadas Completo</option>
+          </select>
         </div>
 
         <div class="relative">
-          <i class="fa-solid fa-magnifying-glass absolute left-4 top-4 text-slate-400 text-lg"></i>
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-base"></i>
           <input
             type="text"
-            id="usaSearchQuery"
-            oninput="App.renderUSAShipments()"
-            placeholder="Escribe el FOLIO (ej. STH-1001), nombre de quién recibe, quién envía, teléfono en EE. UU., ciudad o producto..."
-            class="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 text-base font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white transition"
+            id="usaSearchInput"
+            oninput="App.renderUSANotas()"
+            placeholder="Busca por NOTA NO. (ej. 1499), Nombre (ej. Juan Pablo), Envía (ej. La Güera), Teléfono o contenido..."
+            class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 text-sm sm:text-base font-semibold focus:outline-none focus:border-blue-700 focus:bg-white"
           >
         </div>
       </div>
 
-      <!-- Resultados de Paquetes -->
-      <div id="usaShipmentsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+      <div id="usaNotasGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </section>
 
     <!-- =================================================================
-         VISTA 3: DIRECTORIO DE CLIENTES E HISTORIAL ("NUEVO VIAJE")
+         SECCIÓN 3: DIRECTORIO DE CLIENTES ("NUEVO VIAJE")
          ================================================================= -->
-    <section id="view-clientes" class="hidden space-y-6">
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+    <section id="tab-clientes" class="hidden space-y-4">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-3">
         <div>
-          <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 block">Base de Datos Relacional</span>
-          <h2 class="text-xl font-black text-slate-900">Directorio de Clientes e Historial por Viaje</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Cada vez que guardas una nota, la persona queda registrada con sus destinatarios en EE. UU. para futuros viajes.</p>
+          <h2 class="text-base sm:text-lg font-black text-slate-900">Clientes Guardados e Historial de Notas</h2>
+          <p class="text-xs text-slate-500">Toca <strong>"+ Nuevo Viaje"</strong> en cualquier persona para crearle una nueva nota con sus datos listos.</p>
         </div>
-
-        <div class="relative w-full md:w-96">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
-          <input
-            type="text"
-            id="clientDirectorySearch"
-            oninput="App.renderClientsDirectory()"
-            placeholder="Buscar cliente por nombre, teléfono o destinatario..."
-            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:border-indigo-600"
-          >
-        </div>
+        <input
+          type="text"
+          id="clientSearchInput"
+          oninput="App.renderClientes()"
+          placeholder="Buscar persona..."
+          class="w-full sm:w-80 px-3.5 py-2 rounded-xl border border-slate-300 text-sm font-semibold"
+        >
       </div>
 
-      <div id="clientsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="clientesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
     <!-- =================================================================
-         VISTA 4: CORTE DE CAJA Y MANIFIESTO DE ADUANA / VIAJE
+         SECCIÓN 4: LISTA GENERAL Y CORTE
          ================================================================= -->
-    <section id="view-manifiesto" class="hidden space-y-6">
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-5">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-600 block">Control Financiero y Logístico</span>
-            <h2 class="text-xl font-black text-slate-900">Manifiesto General de Carga y Corte de Caja</h2>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="manifestFilterViaje" onchange="App.renderManifestTable()" class="border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold bg-slate-50">
-              <option value="ALL">Todos los Viajes</option>
-            </select>
-            <button onclick="App.exportManifestCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow flex items-center gap-2 transition">
-              <i class="fa-solid fa-file-excel"></i> Descargar Manifiesto en Excel (CSV)
-            </button>
-          </div>
+    <section id="tab-corte" class="hidden space-y-4">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-base sm:text-lg font-black text-slate-900">Relación de Notas y Exportación a Excel</h2>
+          <button onclick="App.exportCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-file-excel"></i> Descargar Excel (CSV)
+          </button>
         </div>
 
-        <div class="overflow-x-auto border border-slate-200 rounded-2xl custom-scroll">
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="bg-slate-900 text-white uppercase font-bold">
-                <th class="py-3 px-3">Folio</th>
-                <th class="py-3 px-3">Fecha / Viaje</th>
-                <th class="py-3 px-3">Quién Envía (MX)</th>
-                <th class="py-3 px-3">Quién Recibe (EE. UU.)</th>
-                <th class="py-3 px-3">Destino USA</th>
-                <th class="py-3 px-3">Contenido Declarado</th>
-                <th class="py-3 px-3 text-right">Peso</th>
-                <th class="py-3 px-3 text-right">Total</th>
-                <th class="py-3 px-3 text-right">Pagado</th>
-                <th class="py-3 px-3 text-right">Saldo</th>
-                <th class="py-3 px-3 text-center">Estado</th>
-                <th class="py-3 px-3 text-center">Acciones</th>
+              <tr class="bg-blue-900 text-white uppercase font-black">
+                <th class="py-2.5 px-3">Nota No.</th>
+                <th class="py-2.5 px-3">Recibe (Destino)</th>
+                <th class="py-2.5 px-3">Tel. USA</th>
+                <th class="py-2.5 px-3">Envía (Origen)</th>
+                <th class="py-2.5 px-3">Contenido</th>
+                <th class="py-2.5 px-3 text-right">Total $</th>
+                <th class="py-2.5 px-3 text-right">Resta</th>
+                <th class="py-2.5 px-3 text-center">Acciones</th>
               </tr>
             </thead>
-            <tbody id="manifestTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+            <tbody id="corteTableBody" class="divide-y divide-slate-200"></tbody>
           </table>
         </div>
       </div>
@@ -583,1266 +618,743 @@
   </main>
 
   <!-- =================================================================
-       MODAL DE COMPROBANTE / ETIQUETA ADHESIVA PARA CAJA
+       MODAL DE TALÓN DE NOTA OFICIAL IMPRIMIBLE (IDÉNTICA A LA FOTO)
        ================================================================= -->
-  <div id="printModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-300 my-8">
+  <div id="notaModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-300 my-6">
       
-      <!-- Barra de Herramientas del Modal (No se imprime) -->
-      <div class="bg-slate-900 text-white px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 no-print">
+      <div class="bg-blue-950 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2 no-print">
+        <span class="text-xs font-black uppercase tracking-wider text-amber-300">
+          <i class="fa-solid fa-receipt mr-1"></i> Vista Oficial de Nota
+        </span>
         <div class="flex items-center gap-2">
-          <button onclick="App.setPrintFormat('nota')" id="btnFormatNota" class="bg-amber-500 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-file-invoice"></i> Formato Nota / Recibo
+          <button onclick="App.sendWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
           </button>
-          <button onclick="App.setPrintFormat('etiqueta')" id="btnFormatEtiqueta" class="bg-slate-800 text-slate-300 hover:text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-qrcode"></i> Etiqueta para Pegar en Caja
+          <button onclick="window.print()" class="bg-white text-blue-950 font-black px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
+            <i class="fa-solid fa-print"></i> Imprimir / PDF
           </button>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button onclick="App.shareViaWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5">
-            <i class="fa-brands fa-whatsapp text-sm"></i> Enviar WhatsApp
-          </button>
-          <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
-          </button>
-          <button onclick="App.closePrintModal()" class="text-slate-400 hover:text-white px-2 text-lg">
+          <button onclick="App.closeModal()" class="text-slate-300 hover:text-white px-2 text-lg">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
 
-      <!-- Contenedor Imprimible Dinámico -->
-      <div id="printContainer" class="p-6 md:p-8 bg-white text-slate-900"></div>
+      <!-- ÁREA IMPRIMIBLE CON EL DISEÑO EXACTO DEL TALONARIO FÍSICO -->
+      <div id="printArea" class="p-4 sm:p-6 bg-white text-slate-900"></div>
+
     </div>
   </div>
 
-  <!-- =================================================================
-       MODAL DE EXPEDIENTE COMPLETO DEL CLIENTE
-       ================================================================= -->
-  <div id="clientHistoryModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto no-print">
-    <div class="bg-white rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl border border-slate-200 my-8">
-      <div class="bg-slate-900 text-white px-6 py-4 flex flex-wrap justify-between items-center gap-3">
-        <div>
-          <span class="text-[11px] font-extrabold uppercase tracking-widest text-amber-400 block">Historial de Viajes del Cliente</span>
-          <h3 id="modalClientTitle" class="text-lg font-black"></h3>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="modalBtnNewTrip" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-plus"></i> Iniciar Nuevo Viaje a este Cliente
-          </button>
-          <button onclick="App.closeClientModal()" class="text-slate-400 hover:text-white px-2 text-lg">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-      </div>
-      <div id="modalClientHistoryList" class="p-6 max-h-[72vh] overflow-y-auto space-y-3 custom-scroll"></div>
-    </div>
-  </div>
-
-  <!-- =================================================================
-       MOTOR JAVASCRIPT MODULAR (ARQUITECTURA EMPRESARIAL EN CERO)
-       ================================================================= -->
   <script>
     const App = {
-      STORAGE_KEY: 'PAQUETERIA_STH_PRO_ZERO_V2',
-      currentPrintShipmentId: null,
-      currentPrintMode: 'nota',
+      STORAGE_KEY: 'PAQUETERIA_STO_TOMAS_OFICIAL_V1',
+      rows: [],
+      activePrintId: null,
 
-      // Estado Inicial 100% EN CERO (Sin saldos ni envíos precargados)
+      // Inicia 100% en CERO
       state: {
-        config: {
-          nextFolio: 1001,
-          currentViaje: 'Viaje General',
-          exchangeRate: 19.50,
-          defaultRateKg: 180
-        },
+        nextFolio: 1500,
+        ultimoRecibio: 'OSCAR',
         clientes: [],
-        envios: []
+        notas: []
       },
 
       init() {
-        const raw = localStorage.getItem(this.STORAGE_KEY);
-        if (raw) {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        if (saved) {
           try {
-            const parsed = JSON.parse(raw);
-            if (parsed && Array.isArray(parsed.envios) && Array.isArray(parsed.clientes)) {
-              this.state = parsed;
-            }
-          } catch (err) {
-            console.error('Error al leer almacenamiento local:', err);
-          }
+            const parsed = JSON.parse(saved);
+            if (parsed && Array.isArray(parsed.notas)) this.state = parsed;
+          } catch (e) { console.error(e); }
         }
 
-        // Sincronizar inputs de configuración
-        document.getElementById('globalExchangeRate').value = this.state.config.exchangeRate || 19.50;
-        document.getElementById('defaultRatePerKg').value = this.state.config.defaultRateKg || 180;
-        document.getElementById('formViaje').value = this.state.config.currentViaje || 'Viaje General';
+        this.setupEnterFlow();
+        this.clearNotaForm();
+        this.updateStats();
 
-        this.resetCaptureForm();
-        this.refreshAllIndicators();
-
-        // Cerrar autocompletado al hacer clic fuera
         document.addEventListener('click', (e) => {
-          if (!e.target.closest('#quickSearchClientInput') && !e.target.closest('#quickSearchDropdown')) {
-            document.getElementById('quickSearchDropdown').classList.add('hidden');
+          if (!e.target.closest('#quickPersonSearch') && !e.target.closest('#quickPersonDropdown')) {
+            document.getElementById('quickPersonDropdown').classList.add('hidden');
           }
         });
       },
 
-      saveState() {
+      saveDB() {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
-        this.refreshAllIndicators();
+        this.updateStats();
       },
 
-      updateConfig() {
-        const tc = parseFloat(document.getElementById('globalExchangeRate').value) || 19.50;
-        this.state.config.exchangeRate = tc;
-        this.saveState();
-        this.recalculateFormTotals();
-        this.notify('Tipo de cambio actualizado a $' + tc.toFixed(2) + ' MXN/USD', 'info');
-      },
-
-      // ===============================================================
-      // NAVEGACIÓN ENTRE MÓDULOS
-      // ===============================================================
-      switchView(viewName) {
-        const views = ['captura', 'usa', 'clientes', 'manifiesto'];
-        views.forEach(v => {
-          document.getElementById(`view-${v}`).classList.toggle('hidden', v !== viewName);
-          const btn = document.getElementById(`nav-${v}`);
-          if (v === viewName) {
-            btn.className = 'nav-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold transition flex items-center gap-2 bg-amber-500 text-slate-950 shadow';
-          } else {
-            btn.className = 'nav-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-slate-300 hover:text-white transition flex items-center gap-2';
-          }
+      // Configurar navegación con tecla Enter en cabecera y renglones
+      setupEnterFlow() {
+        document.querySelectorAll('.enter-field').forEach(el => {
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const nextId = el.getAttribute('data-enter-next');
+              const nextEl = document.getElementById(nextId);
+              if (nextEl) {
+                nextEl.focus();
+                if (nextEl.select) nextEl.select();
+              }
+            }
+          });
         });
 
-        if (viewName === 'usa') {
-          this.populateTripSelects();
-          this.renderUSAShipments();
-        } else if (viewName === 'clientes') {
-          this.renderClientsDirectory();
-        } else if (viewName === 'manifiesto') {
-          this.populateTripSelects();
-          this.renderManifestTable();
-        }
-      },
-
-      // ===============================================================
-      // INDICADORES SUPERIORES (KPIs)
-      // ===============================================================
-      refreshAllIndicators() {
-        const envios = this.state.envios;
-        const tc = this.state.config.exchangeRate || 19.50;
-
-        const totalEnvios = envios.length;
-        const entregados = envios.filter(e => e.estado === 'Entregado en EE. UU.').length;
-        const pesoTotalKg = envios.reduce((sum, e) => sum + (Number(e.pesoTotalKg) || 0), 0);
-        const cobradoTotal = envios.reduce((sum, e) => sum + (Number(e.anticipo) || 0), 0);
-        const pendienteTotal = envios.reduce((sum, e) => sum + (Number(e.saldo) || 0), 0);
-
-        document.getElementById('kpi-total-envios').textContent = totalEnvios;
-        document.getElementById('kpi-entregados-sub').textContent = `${entregados} entregado(s) en EE. UU.`;
-        document.getElementById('kpi-peso-total').textContent = `${pesoTotalKg.toFixed(2)} kg`;
-        document.getElementById('kpi-libras-sub').textContent = `${(pesoTotalKg * 2.20462).toFixed(2)} lbs aprox.`;
-        document.getElementById('kpi-cobrado').textContent = this.formatCurrency(cobradoTotal);
-        document.getElementById('kpi-pendiente').textContent = this.formatCurrency(pendienteTotal);
-        document.getElementById('kpi-pendiente-usd').textContent = `≈ $${(pendienteTotal / tc).toFixed(2)} USD`;
-        document.getElementById('kpi-clientes').textContent = this.state.clientes.length;
-      },
-
-      // ===============================================================
-      // TABLA DINÁMICA DE ARTÍCULOS Y CÁLCULO AUTOMÁTICO
-      // ===============================================================
-      addItemRow(itemData = {}) {
-        const tbody = document.getElementById('itemsTableBody');
-        const defaultRate = parseFloat(document.getElementById('defaultRatePerKg').value) || 180;
-
-        const cant = itemData.cant ?? 1;
-        const desc = itemData.desc ?? '';
-        const cat = itemData.cat ?? 'Alimentos';
-        const peso = itemData.peso ?? 1.0;
-        const unidad = itemData.unidad ?? 'kg';
-        const modo = itemData.modo ?? 'peso';
-        const precio = itemData.precio ?? defaultRate;
-
-        const tr = document.createElement('tr');
-        tr.className = 'item-row hover:bg-amber-50/30 transition';
-        tr.innerHTML = `
-          <td class="p-2.5 text-center font-mono-code text-xs text-slate-400 row-index">1</td>
-          <td class="p-2.5">
-            <input type="number" min="1" value="${cant}" oninput="App.recalculateFormTotals()" class="f-cant w-full border border-slate-300 rounded-lg px-2 py-1.5 text-center font-bold focus:outline-none focus:border-amber-500">
-          </td>
-          <td class="p-2.5">
-            <input type="text" value="${desc}" placeholder="Ej. Queso cincho, Pan de fiesta, Ropa, Medicina..." class="f-desc w-full border border-slate-300 rounded-lg px-3 py-1.5 font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
-          </td>
-          <td class="p-2.5">
-            <select class="f-cat w-full border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-bold bg-white">
-              <option value="Alimentos" ${cat === 'Alimentos' ? 'selected' : ''}>Alimentos</option>
-              <option value="Perecedero" ${cat === 'Perecedero' ? 'selected' : ''}>Perecedero / Refrig.</option>
-              <option value="Ropa" ${cat === 'Ropa' ? 'selected' : ''}>Ropa / Calzado</option>
-              <option value="Medicinas" ${cat === 'Medicinas' ? 'selected' : ''}>Medicinas</option>
-              <option value="Documentos" ${cat === 'Documentos' ? 'selected' : ''}>Documentos</option>
-              <option value="Varios" ${cat === 'Varios' ? 'selected' : ''}>Caja / Varios</option>
-            </select>
-          </td>
-          <td class="p-2.5">
-            <input type="number" min="0" step="0.1" value="${peso}" oninput="App.recalculateFormTotals()" class="f-peso w-full border border-slate-300 rounded-lg px-2 py-1.5 text-right font-mono-code font-bold focus:outline-none focus:border-amber-500">
-          </td>
-          <td class="p-2.5">
-            <select onchange="App.recalculateFormTotals()" class="f-unidad w-full border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-bold bg-white text-center">
-              <option value="kg" ${unidad === 'kg' ? 'selected' : ''}>KG</option>
-              <option value="lb" ${unidad === 'lb' ? 'selected' : ''}>LBS</option>
-            </select>
-          </td>
-          <td class="p-2.5">
-            <select onchange="App.recalculateFormTotals()" class="f-modo w-full border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-bold bg-white">
-              <option value="peso" ${modo === 'peso' ? 'selected' : ''}>Por Peso (Kg/Lb × $)</option>
-              <option value="fijo" ${modo === 'fijo' ? 'selected' : ''}>Por Pieza (Cant × $)</option>
-            </select>
-          </td>
-          <td class="p-2.5">
-            <input type="number" min="0" step="5" value="${precio}" oninput="App.recalculateFormTotals()" class="f-precio w-full border border-slate-300 rounded-lg px-2 py-1.5 text-right font-mono-code font-bold focus:outline-none focus:border-amber-500">
-          </td>
-          <td class="p-2.5 text-right font-mono-code font-black text-slate-900 f-subtotal">$0.00</td>
-          <td class="p-2.5 text-center">
-            <button type="button" onclick="App.removeItemRow(this)" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Quitar renglón">
-              <i class="fa-solid fa-xmark text-base"></i>
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-        this.reindexRows();
-        this.recalculateFormTotals();
-      },
-
-      quickInsertItem(desc, cat, peso = 1, modo = 'peso', customPrice = null) {
-        const defaultRate = parseFloat(document.getElementById('defaultRatePerKg').value) || 180;
-        const rows = document.querySelectorAll('#itemsTableBody tr.item-row');
-        if (rows.length === 1 && rows[0].querySelector('.f-desc').value.trim() === '') {
-          rows[0].querySelector('.f-desc').value = desc;
-          rows[0].querySelector('.f-cat').value = cat;
-          rows[0].querySelector('.f-peso').value = peso;
-          rows[0].querySelector('.f-modo').value = modo;
-          rows[0].querySelector('.f-precio').value = customPrice ?? defaultRate;
-          this.recalculateFormTotals();
-          return;
-        }
-        this.addItemRow({
-          cant: 1,
-          desc,
-          cat,
-          peso,
-          unidad: 'kg',
-          modo,
-          precio: customPrice ?? defaultRate
+        document.querySelectorAll('.enter-row').forEach(el => {
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const nextId = el.getAttribute('data-enter-next');
+              if (nextId === 'COMMIT_ROW') {
+                this.addFastRow();
+              } else {
+                const nextEl = document.getElementById(nextId);
+                if (nextEl) {
+                  nextEl.focus();
+                  if (nextEl.select) nextEl.select();
+                }
+              }
+            }
+          });
         });
       },
 
-      removeItemRow(btn) {
-        const rows = document.querySelectorAll('#itemsTableBody tr.item-row');
-        if (rows.length <= 1) {
-          rows[0].querySelector('.f-desc').value = '';
-          rows[0].querySelector('.f-peso').value = 1;
-          this.recalculateFormTotals();
-          return;
-        }
-        btn.closest('tr').remove();
-        this.reindexRows();
-        this.recalculateFormTotals();
+      getFormattedToday() {
+        const meses = ['Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.', 'Jul.', 'Ago.', 'Sep.', 'Oct.', 'Nov.', 'Dic.'];
+        const d = new Date();
+        return `${d.getDate()}-${meses[d.getMonth()]}`;
       },
 
-      reindexRows() {
-        document.querySelectorAll('#itemsTableBody tr.item-row').forEach((tr, idx) => {
-          tr.querySelector('.row-index').textContent = idx + 1;
-        });
+      // Llenar plantilla rápida como en la nota (K. Mole, K. Quesillo, etc.)
+      fillQuickRow(cant, prefijo, desc, empaque, importe) {
+        document.getElementById('fastCant').value = cant;
+        document.getElementById('fastPrefijo').value = prefijo;
+        document.getElementById('fastDesc').value = desc;
+        document.getElementById('fastEmpaque').value = empaque;
+        document.getElementById('fastImporte').value = importe;
+        document.getElementById('fastImporte').focus();
       },
 
-      recalculateFormTotals() {
-        const rows = document.querySelectorAll('#itemsTableBody tr.item-row');
-        let totalKg = 0;
-        let subtotalArticulos = 0;
+      addFastRow() {
+        const cant = document.getElementById('fastCant').value.trim() || '1';
+        const prefijo = document.getElementById('fastPrefijo').value;
+        const rawDesc = document.getElementById('fastDesc').value.trim();
+        const empaque = document.getElementById('fastEmpaque').value.trim();
+        const importe = parseFloat(document.getElementById('fastImporte').value) || 0;
 
-        rows.forEach(tr => {
-          const cant = parseFloat(tr.querySelector('.f-cant').value) || 0;
-          const peso = parseFloat(tr.querySelector('.f-peso').value) || 0;
-          const unidad = tr.querySelector('.f-unidad').value;
-          const modo = tr.querySelector('.f-modo').value;
-          const precio = parseFloat(tr.querySelector('.f-precio').value) || 0;
-
-          const pesoEnKg = unidad === 'lb' ? (peso * 0.453592) : peso;
-          totalKg += pesoEnKg;
-
-          const importe = modo === 'peso' ? (peso * precio) : (cant * precio);
-          subtotalArticulos += importe;
-
-          tr.querySelector('.f-subtotal').textContent = this.formatCurrency(importe);
-        });
-
-        const cargoExtra = parseFloat(document.getElementById('formCargoExtra').value) || 0;
-        const granTotal = subtotalArticulos + cargoExtra;
-        const anticipo = parseFloat(document.getElementById('formAnticipo').value) || 0;
-        const saldo = Math.max(0, granTotal - anticipo);
-        const tc = this.state.config.exchangeRate || 19.50;
-
-        const totalLbs = totalKg * 2.20462;
-        document.getElementById('summaryWeightDisplay').textContent = `${totalKg.toFixed(2)} kg (${totalLbs.toFixed(2)} lb)`;
-        document.getElementById('summarySubtotal').textContent = this.formatCurrency(subtotalArticulos);
-        document.getElementById('summaryGranTotal').textContent = this.formatCurrency(granTotal);
-        document.getElementById('summarySaldoMXN').textContent = this.formatCurrency(saldo);
-        document.getElementById('summarySaldoUSD').textContent = `Equivalente: $${(saldo / tc).toFixed(2)} USD`;
-      },
-
-      payFullAmount() {
-        const rows = document.querySelectorAll('#itemsTableBody tr.item-row');
-        let sub = 0;
-        rows.forEach(tr => {
-          const cant = parseFloat(tr.querySelector('.f-cant').value) || 0;
-          const peso = parseFloat(tr.querySelector('.f-peso').value) || 0;
-          const modo = tr.querySelector('.f-modo').value;
-          const precio = parseFloat(tr.querySelector('.f-precio').value) || 0;
-          sub += modo === 'peso' ? (peso * precio) : (cant * precio);
-        });
-        const extra = parseFloat(document.getElementById('formCargoExtra').value) || 0;
-        document.getElementById('formAnticipo').value = (sub + extra).toFixed(2);
-        this.recalculateFormTotals();
-      },
-
-      // ===============================================================
-      // AUTOCOMPLETADO Y VINCULACIÓN DE CLIENTES ("NUEVO VIAJE")
-      // ===============================================================
-      handleQuickClientAutocomplete(query) {
-        const dropdown = document.getElementById('quickSearchDropdown');
-        const q = query.trim().toLowerCase();
-        if (!q) {
-          dropdown.classList.add('hidden');
+        if (!rawDesc) {
+          this.toast('Escribe la descripción de lo que envía', 'error');
+          document.getElementById('fastDesc').focus();
           return;
         }
 
-        const matches = this.state.clientes.filter(c =>
-          c.nombre.toLowerCase().includes(q) ||
-          c.tel.toLowerCase().includes(q) ||
-          c.destinatarios.some(d => d.nombre.toLowerCase().includes(q) || d.tel.toLowerCase().includes(q))
-        );
+        const fullDesc = prefijo ? `${prefijo} ${rawDesc}` : rawDesc;
+        this.rows.push({
+          cant,
+          desc: fullDesc,
+          empaque: empaque || '1-B',
+          importe
+        });
 
-        if (matches.length === 0) {
-          dropdown.innerHTML = `
-            <div class="p-3.5 text-xs text-slate-500">
-              No hay coincidencias previas. Llena el formulario y el cliente quedará guardado automáticamente para próximos viajes.
-            </div>`;
-          dropdown.classList.remove('hidden');
+        // Limpiar fila rápida y regresar foco a CANTIDAD para seguir bajando con Enter
+        document.getElementById('fastCant').value = '';
+        document.getElementById('fastDesc').value = '';
+        document.getElementById('fastEmpaque').value = '';
+        document.getElementById('fastImporte').value = '';
+
+        this.renderNotaRows();
+        document.getElementById('fastCant').focus();
+      },
+
+      renderNotaRows() {
+        const tbody = document.getElementById('notaRowsBody');
+        if (this.rows.length === 0) {
+          tbody.innerHTML = `
+            <tr class="dotted-row text-slate-400">
+              <td colspan="4" class="py-8 text-center text-xs sm:text-sm font-semibold">
+                Sin renglones anotados todavía. Escribe arriba Cantidad, Descripción, Empaque (ej. 2-B, 1-C) e Importe y presiona <strong>Enter ↵</strong>.
+              </td>
+            </tr>
+          `;
+          this.recalcNotaTotal();
           return;
         }
 
-        dropdown.innerHTML = matches.map(c => `
-          <div onclick="App.loadClientIntoForm('${c.id}')" class="p-3.5 hover:bg-amber-50 cursor-pointer flex items-center justify-between gap-3 transition">
-            <div>
-              <p class="font-extrabold text-sm text-slate-900">${c.nombre}</p>
-              <p class="text-xs text-slate-500"><i class="fa-solid fa-phone mr-1"></i>${c.tel} · ${c.origen}</p>
-            </div>
-            <span class="bg-amber-500 text-slate-950 font-black text-xs px-3 py-1 rounded-lg shrink-0">
-              + Nuevo Viaje
-            </span>
-          </div>
+        tbody.innerHTML = this.rows.map((r, i) => `
+          <tr class="dotted-row hover:bg-blue-50/50">
+            <td class="py-2 px-2 text-center border-r border-blue-300">
+              <input type="text" value="${r.cant}" onchange="App.updateRow(${i}, 'cant', this.value)" class="w-full text-center font-mono-num font-black text-slate-900 bg-transparent focus:bg-white rounded px-1">
+            </td>
+            <td class="py-2 px-3 border-r border-blue-300">
+              <div class="flex items-center justify-between gap-2">
+                <input type="text" value="${r.desc}" onchange="App.updateRow(${i}, 'desc', this.value)" class="w-full font-bold text-slate-900 bg-transparent focus:bg-white rounded px-1">
+                <input type="text" value="${r.empaque}" onchange="App.updateRow(${i}, 'empaque', this.value)" class="w-20 text-right font-mono-num font-extrabold text-blue-800 bg-blue-50/70 rounded px-1.5 py-0.5 text-xs sm:text-sm shrink-0">
+              </div>
+            </td>
+            <td class="py-2 px-3 text-right">
+              <input type="number" value="${r.importe}" onchange="App.updateRow(${i}, 'importe', this.value)" class="w-full text-right font-mono-num font-black text-slate-900 bg-transparent focus:bg-white rounded px-1">
+            </td>
+            <td class="py-2 px-2 text-center">
+              <button type="button" onclick="App.deleteRow(${i})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
+            </td>
+          </tr>
         `).join('');
-        dropdown.classList.remove('hidden');
+
+        this.recalcNotaTotal();
       },
 
-      loadClientIntoForm(clientId) {
-        const client = this.state.clientes.find(c => c.id === clientId);
-        if (!client) return;
+      updateRow(idx, field, val) {
+        if (!this.rows[idx]) return;
+        this.rows[idx][field] = field === 'importe' ? (parseFloat(val) || 0) : val;
+        this.recalcNotaTotal();
+      },
 
-        this.switchView('captura');
-        document.getElementById('quickSearchDropdown').classList.add('hidden');
-        document.getElementById('quickSearchClientInput').value = '';
+      deleteRow(idx) {
+        this.rows.splice(idx, 1);
+        this.renderNotaRows();
+      },
 
-        document.getElementById('selectedClientId').value = client.id;
-        document.getElementById('remNombre').value = client.nombre;
-        document.getElementById('remTel').value = client.tel;
-        document.getElementById('remOrigen').value = client.origen || 'Santo Tomás Hueyotlipan, Pue.';
+      recalcNotaTotal() {
+        const total = this.rows.reduce((sum, r) => sum + (Number(r.importe) || 0), 0);
+        const anticipo = parseFloat(document.getElementById('notaAnticipo').value) || 0;
+        const resta = Math.max(0, total - anticipo);
 
-        const badge = document.getElementById('linkedClientBadge');
-        document.getElementById('linkedClientText').textContent = `Historial activo: ${client.nombre}`;
-        badge.classList.remove('hidden');
+        document.getElementById('notaTotalDisplay').textContent = this.fmt(total);
+        document.getElementById('notaRestaDisplay').textContent = this.fmt(resta);
+      },
 
-        const sel = document.getElementById('savedReceiversSelect');
-        if (client.destinatarios && client.destinatarios.length > 0) {
-          sel.innerHTML = `<option value="">-- Destinatarios guardados (${client.destinatarios.length}) --</option>` +
-            client.destinatarios.map((d, index) => `<option value="${index}">${d.nombre} (${d.ciudad})</option>`).join('');
-          sel.classList.remove('hidden');
+      markFullPaid() {
+        const total = this.rows.reduce((sum, r) => sum + (Number(r.importe) || 0), 0);
+        document.getElementById('notaAnticipo').value = total;
+        this.recalcNotaTotal();
+      },
 
-          const last = client.destinatarios[client.destinatarios.length - 1];
-          document.getElementById('destNombre').value = last.nombre || '';
-          document.getElementById('destTel').value = last.tel || '';
-          document.getElementById('destCiudad').value = last.ciudad || '';
-          document.getElementById('destDireccion').value = last.direccion || '';
-        } else {
-          sel.classList.add('hidden');
+      // GUARDAR NOTA E HISTORIAL DEL CLIENTE
+      saveNota() {
+        const folio = document.getElementById('notaFolio').value.trim() || String(this.state.nextFolio);
+        const recibeNombre = document.getElementById('recibeNombre').value.trim();
+        const recibeDestino = document.getElementById('recibeDestino').value.trim();
+        const recibeTel = document.getElementById('recibeTel').value.trim();
+        const fecha = document.getElementById('notaFecha').value.trim();
+        const recibio = document.getElementById('recibioEncargado').value.trim() || 'OSCAR';
+
+        const enviaNombre = document.getElementById('enviaNombre').value.trim();
+        const enviaTel = document.getElementById('enviaTel').value.trim();
+        const enviaOrigen = document.getElementById('enviaOrigen').value.trim();
+
+        if (!recibeNombre) {
+          this.toast('Escribe el Nombre de quien recibe en la parte superior de la nota', 'error');
+          document.getElementById('recibeNombre').focus();
+          return;
         }
-
-        this.notify(`Datos de ${client.nombre} cargados para un Nuevo Viaje`, 'success');
-      },
-
-      pickSavedReceiver(idx) {
-        const clientId = document.getElementById('selectedClientId').value;
-        const client = this.state.clientes.find(c => c.id === clientId);
-        if (!client || idx === '') return;
-        const d = client.destinatarios[parseInt(idx)];
-        if (d) {
-          document.getElementById('destNombre').value = d.nombre || '';
-          document.getElementById('destTel').value = d.tel || '';
-          document.getElementById('destCiudad').value = d.ciudad || '';
-          document.getElementById('destDireccion').value = d.direccion || '';
-        }
-      },
-
-      // ===============================================================
-      // GUARDAR O ACTUALIZAR NOTA DE ENVÍO
-      // ===============================================================
-      saveShipment() {
-        const remNombre = document.getElementById('remNombre').value.trim();
-        const remTel = document.getElementById('remTel').value.trim();
-        const remOrigen = document.getElementById('remOrigen').value.trim();
-
-        const destNombre = document.getElementById('destNombre').value.trim();
-        const destTel = document.getElementById('destTel').value.trim();
-        const destCiudad = document.getElementById('destCiudad').value.trim();
-        const destDireccion = document.getElementById('destDireccion').value.trim();
-
-        const viaje = document.getElementById('formViaje').value.trim() || 'Viaje General';
-
-        if (!remNombre || !destNombre || !destTel || !destCiudad) {
-          this.notify('Completa quién envía, quién recibe, teléfono en EE. UU. y ciudad destino.', 'error');
+        if (this.rows.length === 0) {
+          this.toast('Agrega al menos un renglón a la nota', 'error');
+          document.getElementById('fastCant').focus();
           return;
         }
 
-        // Recolectar artículos
-        const items = [];
-        let pesoTotalKg = 0;
-        let subtotal = 0;
+        const total = this.rows.reduce((sum, r) => sum + (Number(r.importe) || 0), 0);
+        const anticipo = parseFloat(document.getElementById('notaAnticipo').value) || 0;
+        const resta = Math.max(0, total - anticipo);
 
-        document.querySelectorAll('#itemsTableBody tr.item-row').forEach(tr => {
-          const cant = parseFloat(tr.querySelector('.f-cant').value) || 1;
-          const desc = tr.querySelector('.f-desc').value.trim();
-          const cat = tr.querySelector('.f-cat').value;
-          const peso = parseFloat(tr.querySelector('.f-peso').value) || 0;
-          const unidad = tr.querySelector('.f-unidad').value;
-          const modo = tr.querySelector('.f-modo').value;
-          const precio = parseFloat(tr.querySelector('.f-precio').value) || 0;
-
-          if (desc !== '') {
-            const pesoKg = unidad === 'lb' ? (peso * 0.453592) : peso;
-            const importe = modo === 'peso' ? (peso * precio) : (cant * precio);
-            items.push({ cant, desc, cat, peso, unidad, modo, precio, importe });
-            pesoTotalKg += pesoKg;
-            subtotal += importe;
-          }
-        });
-
-        if (items.length === 0) {
-          this.notify('Agrega al menos un artículo en la tabla de contenido.', 'error');
-          return;
-        }
-
-        const cargoExtra = parseFloat(document.getElementById('formCargoExtra').value) || 0;
-        const total = subtotal + cargoExtra;
-        const anticipo = parseFloat(document.getElementById('formAnticipo').value) || 0;
-        const saldo = Math.max(0, total - anticipo);
-
-        const numCajas = parseInt(document.getElementById('formNumCajas').value) || 1;
-        const metodoPago = document.getElementById('formMetodoPago').value;
-        const estado = document.getElementById('formEstadoEnvio').value;
-        const observaciones = document.getElementById('formObservaciones').value.trim();
-
-        // Actualizar o crear cliente en el directorio
-        let clientId = document.getElementById('selectedClientId').value;
-        let client = this.state.clientes.find(c => c.id === clientId || c.nombre.toLowerCase() === remNombre.toLowerCase());
+        // Guardar en el directorio de clientes para próximos viajes
+        let clientId = document.getElementById('linkedClientId').value;
+        let client = this.state.clientes.find(c =>
+          c.id === clientId ||
+          c.recibeNombre.toLowerCase() === recibeNombre.toLowerCase()
+        );
 
         if (!client) {
           client = {
             id: 'CLI-' + Date.now(),
-            nombre: remNombre,
-            tel: remTel,
-            origen: remOrigen,
-            destinatarios: [{ nombre: destNombre, tel: destTel, ciudad: destCiudad, direccion: destDireccion }]
+            recibeNombre,
+            recibeDestino,
+            recibeTel,
+            enviaNombre,
+            enviaTel,
+            enviaOrigen
           };
           this.state.clientes.push(client);
         } else {
-          client.nombre = remNombre;
-          client.tel = remTel || client.tel;
-          client.origen = remOrigen || client.origen;
-          const existingRec = client.destinatarios.find(d => d.nombre.toLowerCase() === destNombre.toLowerCase());
-          if (existingRec) {
-            existingRec.tel = destTel;
-            existingRec.ciudad = destCiudad;
-            existingRec.direccion = destDireccion;
-          } else {
-            client.destinatarios.push({ nombre: destNombre, tel: destTel, ciudad: destCiudad, direccion: destDireccion });
-          }
+          client.recibeDestino = recibeDestino || client.recibeDestino;
+          client.recibeTel = recibeTel || client.recibeTel;
+          client.enviaNombre = enviaNombre || client.enviaNombre;
+          client.enviaTel = enviaTel || client.enviaTel;
+          client.enviaOrigen = enviaOrigen || client.enviaOrigen;
         }
 
-        const editingId = document.getElementById('editingShipmentId').value;
-        let savedRecord = null;
+        this.state.ultimoRecibio = recibio;
+
+        const editingId = document.getElementById('editingNotaId').value;
+        let savedNota = null;
 
         if (editingId) {
-          // Modo edición de nota existente
-          const idx = this.state.envios.findIndex(e => e.id === editingId);
+          const idx = this.state.notas.findIndex(n => n.id === editingId);
           if (idx !== -1) {
-            savedRecord = {
-              ...this.state.envios[idx],
-              viaje,
-              clienteId: client.id,
-              remitente: { nombre: remNombre, tel: remTel, origen: remOrigen },
-              destinatario: { nombre: destNombre, tel: destTel, ciudad: destCiudad, direccion: destDireccion },
-              items,
-              pesoTotalKg,
-              subtotal,
-              cargoExtra,
-              total,
-              anticipo,
-              saldo,
-              numCajas,
-              metodoPago,
-              estado,
-              observaciones
+            savedNota = {
+              ...this.state.notas[idx],
+              folio, fecha, recibio,
+              recibeNombre, recibeDestino, recibeTel,
+              enviaNombre, enviaTel, enviaOrigen,
+              rows: [...this.rows],
+              total, anticipo, resta
             };
-            this.state.envios[idx] = savedRecord;
-            this.notify(`Nota ${savedRecord.folio} actualizada correctamente`, 'success');
+            this.state.notas[idx] = savedNota;
           }
         } else {
-          // Nueva Nota
-          const folio = `STH-${this.state.config.nextFolio++}`;
-          this.state.config.currentViaje = viaje;
-          savedRecord = {
-            id: 'ENV-' + Date.now(),
-            folio,
-            fecha: new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }),
-            viaje,
+          savedNota = {
+            id: 'NOTA-' + Date.now(),
+            folio, fecha, recibio,
             clienteId: client.id,
-            remitente: { nombre: remNombre, tel: remTel, origen: remOrigen },
-            destinatario: { nombre: destNombre, tel: destTel, ciudad: destCiudad, direccion: destDireccion },
-            items,
-            pesoTotalKg,
-            subtotal,
-            cargoExtra,
-            total,
-            anticipo,
-            saldo,
-            numCajas,
-            metodoPago,
-            estado,
-            observaciones
+            recibeNombre, recibeDestino, recibeTel,
+            enviaNombre, enviaTel, enviaOrigen,
+            rows: [...this.rows],
+            total, anticipo, resta,
+            entregadoUSA: false
           };
-          this.state.envios.unshift(savedRecord);
-          this.notify(`Nota ${folio} guardada en el historial`, 'success');
+          this.state.notas.unshift(savedNota);
+          const numFolio = parseInt(folio);
+          if (!isNaN(numFolio) && numFolio >= this.state.nextFolio) {
+            this.state.nextFolio = numFolio + 1;
+          } else {
+            this.state.nextFolio++;
+          }
         }
 
-        this.saveState();
-        this.resetCaptureForm();
-        if (savedRecord) {
-          this.openPrintModal(savedRecord.id, 'nota');
-        }
+        this.saveDB();
+        this.clearNotaForm();
+        if (savedNota) this.openNotaModal(savedNota.id);
+        this.toast(`Nota No. ${folio} guardada correctamente`);
       },
 
-      editShipment(shipmentId) {
-        const e = this.state.envios.find(item => item.id === shipmentId);
-        if (!e) return;
+      clearNotaForm() {
+        this.rows = [];
+        document.getElementById('editingNotaId').value = '';
+        document.getElementById('linkedClientId').value = '';
+        document.getElementById('notaFolio').value = this.state.nextFolio || 1500;
+        document.getElementById('recibeNombre').value = '';
+        document.getElementById('recibeDestino').value = '';
+        document.getElementById('recibeTel').value = '';
+        document.getElementById('notaFecha').value = this.getFormattedToday();
+        document.getElementById('recibioEncargado').value = this.state.ultimoRecibio || 'OSCAR';
+        document.getElementById('enviaNombre').value = '';
+        document.getElementById('enviaTel').value = '';
+        document.getElementById('enviaOrigen').value = 'Sto. Tomás Hueyotlipan';
+        document.getElementById('notaAnticipo').value = 0;
+        document.getElementById('btnSaveNotaLabel').textContent = 'Guardar Nota y Ver Talón Oficial';
 
-        this.switchView('captura');
-        document.getElementById('editingShipmentId').value = e.id;
-        document.getElementById('selectedClientId').value = e.clienteId || '';
-        document.getElementById('formFolioDisplay').textContent = e.folio;
-        document.getElementById('editingModeBadge').classList.remove('hidden');
-        document.getElementById('btnSaveMainText').textContent = `Guardar Cambios en ${e.folio}`;
+        this.renderNotaRows();
+      },
 
-        document.getElementById('formViaje').value = e.viaje;
-        document.getElementById('remNombre').value = e.remitente.nombre;
-        document.getElementById('remTel').value = e.remitente.tel;
-        document.getElementById('remOrigen').value = e.remitente.origen;
+      // AUTOCOMPLETADO Y "NUEVO VIAJE"
+      searchQuickPerson(q) {
+        const drop = document.getElementById('quickPersonDropdown');
+        const query = q.trim().toLowerCase();
+        if (!query) { drop.classList.add('hidden'); return; }
 
-        document.getElementById('destNombre').value = e.destinatario.nombre;
-        document.getElementById('destTel').value = e.destinatario.tel;
-        document.getElementById('destCiudad').value = e.destinatario.ciudad;
-        document.getElementById('destDireccion').value = e.destinatario.direccion || '';
+        const matches = this.state.clientes.filter(c =>
+          (c.recibeNombre && c.recibeNombre.toLowerCase().includes(query)) ||
+          (c.enviaNombre && c.enviaNombre.toLowerCase().includes(query)) ||
+          (c.recibeTel && c.recibeTel.toLowerCase().includes(query))
+        );
 
-        document.getElementById('formNumCajas').value = e.numCajas || 1;
-        document.getElementById('formMetodoPago').value = e.metodoPago || 'Efectivo';
-        document.getElementById('formEstadoEnvio').value = e.estado || 'Recibido en Sucursal';
-        document.getElementById('formObservaciones').value = e.observaciones || '';
-        document.getElementById('formCargoExtra').value = e.cargoExtra || 0;
-        document.getElementById('formAnticipo').value = e.anticipo || 0;
+        if (matches.length === 0) {
+          drop.innerHTML = `<div class="p-3 text-xs text-slate-500">No registrado aún. Al guardar la nota quedará guardado para futuros viajes.</div>`;
+          drop.classList.remove('hidden');
+          return;
+        }
 
-        const tbody = document.getElementById('itemsTableBody');
-        tbody.innerHTML = '';
-        e.items.forEach(item => this.addItemRow(item));
-        this.recalculateFormTotals();
+        drop.innerHTML = matches.map(c => `
+          <div onclick="App.startNewTripForClient('${c.id}')" class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center">
+            <div>
+              <p class="font-black text-xs sm:text-sm text-slate-900">Recibe: ${c.recibeNombre} (${c.recibeDestino || 'USA'})</p>
+              <p class="text-[11px] text-slate-500">Envía: ${c.enviaNombre || '---'} · Tel USA: ${c.recibeTel || '---'}</p>
+            </div>
+            <span class="bg-blue-800 text-white font-black text-[11px] px-2.5 py-1 rounded-lg">+ Nuevo Viaje</span>
+          </div>
+        `).join('');
+        drop.classList.remove('hidden');
+      },
+
+      startNewTripForClient(clientId) {
+        const c = this.state.clientes.find(x => x.id === clientId);
+        if (!c) return;
+        this.switchTab('nota');
+        document.getElementById('quickPersonDropdown').classList.add('hidden');
+        document.getElementById('quickPersonSearch').value = '';
+
+        document.getElementById('linkedClientId').value = c.id;
+        document.getElementById('recibeNombre').value = c.recibeNombre || '';
+        document.getElementById('recibeDestino').value = c.recibeDestino || '';
+        document.getElementById('recibeTel').value = c.recibeTel || '';
+        document.getElementById('enviaNombre').value = c.enviaNombre || '';
+        document.getElementById('enviaTel').value = c.enviaTel || '';
+        document.getElementById('enviaOrigen').value = c.enviaOrigen || 'Sto. Tomás Hueyotlipan';
+
+        document.getElementById('fastCant').focus();
+        this.toast(`Datos cargados para Nuevo Viaje de ${c.recibeNombre}`);
+      },
+
+      // VISTA DE BÚSQUEDA EN EE. UU.
+      renderUSANotas() {
+        const q = document.getElementById('usaSearchInput').value.trim().toLowerCase();
+        const payFilter = document.getElementById('usaFilterPay').value;
+        const grid = document.getElementById('usaNotasGrid');
+
+        const filtered = this.state.notas.filter(n => {
+          const matchPay = payFilter === 'ALL' || (payFilter === 'PENDING' && n.resta > 0) || (payFilter === 'PAID' && n.resta <= 0);
+          const matchQ = !q ||
+            String(n.folio).toLowerCase().includes(q) ||
+            (n.recibeNombre && n.recibeNombre.toLowerCase().includes(q)) ||
+            (n.recibeTel && n.recibeTel.toLowerCase().includes(q)) ||
+            (n.recibeDestino && n.recibeDestino.toLowerCase().includes(q)) ||
+            (n.enviaNombre && n.enviaNombre.toLowerCase().includes(q)) ||
+            n.rows.some(r => r.desc.toLowerCase().includes(q));
+          return matchPay && matchQ;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="col-span-full bg-white p-10 rounded-2xl text-center text-slate-400 font-bold border border-slate-200">No hay notas registradas con ese criterio.</div>`;
+          return;
+        }
+
+        grid.innerHTML = filtered.map(n => `
+          <div class="bg-white rounded-2xl border-2 border-blue-200 p-4 shadow-2xs flex flex-col justify-between gap-3">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="bg-blue-900 text-white font-mono-num font-black text-sm px-3 py-1 rounded-lg">NOTA NO. ${n.folio}</span>
+                  <span class="text-xs font-bold text-slate-500">${n.fecha}</span>
+                </div>
+                <span class="text-xs font-black px-2.5 py-1 rounded-full ${n.entregadoUSA ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  ${n.entregadoUSA ? 'Entregado USA' : 'En Reparto'}
+                </span>
+              </div>
+
+              <div class="bg-blue-50/70 p-3 rounded-xl border border-blue-200">
+                <p class="text-[10px] font-black uppercase text-blue-800">Recibe en ${n.recibeDestino || 'EE. UU.'}:</p>
+                <p class="text-base font-black text-slate-900">${n.recibeNombre}</p>
+                <p class="text-xs font-mono-num font-bold text-blue-900 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${n.recibeTel || 'Sin tel.'}</p>
+              </div>
+
+              <div class="text-xs text-slate-600 flex justify-between">
+                <span><strong>Envía:</strong> ${n.enviaNombre || '---'} (${n.enviaOrigen || ''})</span>
+                <span><strong>Recibió:</strong> ${n.recibio}</span>
+              </div>
+
+              <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs space-y-1 max-h-40 overflow-y-auto">
+                ${n.rows.map(r => `
+                  <div class="flex justify-between border-b border-dotted border-slate-200 pb-0.5">
+                    <span><strong>${r.cant}</strong> ${r.desc}</span>
+                    <span class="font-mono-num font-bold text-blue-900">${r.empaque} &nbsp; $${r.importe}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2">
+              <div>
+                <span class="text-xs font-bold text-slate-500 block">TOTAL: ${this.fmt(n.total)}</span>
+                ${n.resta > 0
+                  ? `<span class="text-xs font-black text-rose-600">POR COBRAR: ${this.fmt(n.resta)}</span>`
+                  : `<span class="text-xs font-black text-emerald-600">PAGADO COMPLETO</span>`}
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="App.toggleDelivered('${n.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg">
+                  <i class="fa-solid fa-check mr-1"></i>${n.entregadoUSA ? 'Entregado' : 'Liquidar/Entregar'}
+                </button>
+                <button onclick="App.editNota('${n.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button onclick="App.openNotaModal('${n.id}')" class="bg-blue-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                  Ver Nota
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      toggleDelivered(id) {
+        const n = this.state.notas.find(x => x.id === id);
+        if (!n) return;
+        n.entregadoUSA = !n.entregadoUSA;
+        if (n.entregadoUSA) {
+          n.anticipo = n.total;
+          n.resta = 0;
+        }
+        this.saveDB();
+        this.renderUSANotas();
+      },
+
+      editNota(id) {
+        const n = this.state.notas.find(x => x.id === id);
+        if (!n) return;
+        this.switchTab('nota');
+        document.getElementById('editingNotaId').value = n.id;
+        document.getElementById('linkedClientId').value = n.clienteId || '';
+        document.getElementById('notaFolio').value = n.folio;
+        document.getElementById('recibeNombre').value = n.recibeNombre;
+        document.getElementById('recibeDestino').value = n.recibeDestino;
+        document.getElementById('recibeTel').value = n.recibeTel;
+        document.getElementById('notaFecha').value = n.fecha;
+        document.getElementById('recibioEncargado').value = n.recibio;
+        document.getElementById('enviaNombre').value = n.enviaNombre;
+        document.getElementById('enviaTel').value = n.enviaTel;
+        document.getElementById('enviaOrigen').value = n.enviaOrigen;
+        document.getElementById('notaAnticipo').value = n.anticipo;
+        document.getElementById('btnSaveNotaLabel').textContent = `Actualizar Nota No. ${n.folio}`;
+
+        this.rows = [...n.rows];
+        this.renderNotaRows();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
 
-      deleteShipment(shipmentId) {
-        const e = this.state.envios.find(item => item.id === shipmentId);
-        if (!e) return;
-        if (!confirm(`¿Seguro que deseas eliminar la nota ${e.folio} de ${e.remitente.nombre}?`)) return;
-        this.state.envios = this.state.envios.filter(item => item.id !== shipmentId);
-        this.saveState();
-        this.renderUSAShipments();
-        this.renderManifestTable();
-        this.notify(`Nota ${e.folio} eliminada`, 'info');
-      },
-
-      resetCaptureForm() {
-        document.getElementById('editingShipmentId').value = '';
-        document.getElementById('selectedClientId').value = '';
-        document.getElementById('formFolioDisplay').textContent = `STH-${this.state.config.nextFolio}`;
-        document.getElementById('editingModeBadge').classList.add('hidden');
-        document.getElementById('linkedClientBadge').classList.add('hidden');
-        document.getElementById('savedReceiversSelect').classList.add('hidden');
-        document.getElementById('btnSaveMainText').textContent = 'Guardar Nota y Generar Comprobante';
-
-        document.getElementById('remNombre').value = '';
-        document.getElementById('remTel').value = '';
-        document.getElementById('remOrigen').value = 'Santo Tomás Hueyotlipan, Pue.';
-        document.getElementById('destNombre').value = '';
-        document.getElementById('destTel').value = '';
-        document.getElementById('destCiudad').value = '';
-        document.getElementById('destDireccion').value = '';
-
-        document.getElementById('formNumCajas').value = 1;
-        document.getElementById('formMetodoPago').value = 'Efectivo';
-        document.getElementById('formEstadoEnvio').value = 'Recibido en Sucursal';
-        document.getElementById('formObservaciones').value = '';
-        document.getElementById('formCargoExtra').value = 0;
-        document.getElementById('formAnticipo').value = 0;
-
-        document.getElementById('itemsTableBody').innerHTML = '';
-        this.addItemRow();
-      },
-
-      // ===============================================================
-      // MÓDULO ESTADOS UNIDOS: BÚSQUEDA Y LIQUIDACIÓN EN REPARTO
-      // ===============================================================
-      populateTripSelects() {
-        const viajes = [...new Set(this.state.envios.map(e => e.viaje))];
-        ['usaFilterViaje', 'manifestFilterViaje'].forEach(id => {
-          const sel = document.getElementById(id);
-          const prev = sel.value;
-          sel.innerHTML = `<option value="ALL">Todos los Viajes (${this.state.envios.length})</option>` +
-            viajes.map(v => `<option value="${v}">${v}</option>`).join('');
-          if (viajes.includes(prev)) sel.value = prev;
-        });
-      },
-
-      renderUSAShipments() {
-        const q = document.getElementById('usaSearchQuery').value.trim().toLowerCase();
-        const fViaje = document.getElementById('usaFilterViaje').value;
-        const fStatus = document.getElementById('usaFilterStatus').value;
-        const fPay = document.getElementById('usaFilterPayment').value;
-        const tc = this.state.config.exchangeRate || 19.50;
-
-        const filtered = this.state.envios.filter(e => {
-          const matchViaje = fViaje === 'ALL' || e.viaje === fViaje;
-          const matchStatus = fStatus === 'ALL' || e.estado === fStatus;
-          const matchPay = fPay === 'ALL' || (fPay === 'PENDING' && e.saldo > 0) || (fPay === 'PAID' && e.saldo <= 0);
-          const matchQuery = !q ||
-            e.folio.toLowerCase().includes(q) ||
-            e.destinatario.nombre.toLowerCase().includes(q) ||
-            e.destinatario.tel.toLowerCase().includes(q) ||
-            e.destinatario.ciudad.toLowerCase().includes(q) ||
-            e.remitente.nombre.toLowerCase().includes(q) ||
-            e.remitente.tel.toLowerCase().includes(q) ||
-            e.items.some(i => i.desc.toLowerCase().includes(q));
-          return matchViaje && matchStatus && matchPay && matchQuery;
-        });
-
-        const grid = document.getElementById('usaShipmentsGrid');
-        if (filtered.length === 0) {
-          grid.innerHTML = `
-            <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-slate-200">
-              <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-2xl">
-                <i class="fa-solid fa-box-open"></i>
-              </div>
-              <h3 class="font-black text-slate-800 text-base">Sin paquetes para mostrar</h3>
-              <p class="text-xs text-slate-500 mt-1">El sistema se encuentra limpio o ningún paquete coincide con los filtros actuales.</p>
-            </div>`;
-          return;
-        }
-
-        grid.innerHTML = filtered.map(e => {
-          const statusStyle = e.estado === 'Entregado en EE. UU.'
-            ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-            : e.estado === 'En Tránsito a EE. UU.'
-            ? 'bg-blue-100 text-blue-800 border-blue-300'
-            : 'bg-amber-100 text-amber-800 border-amber-300';
-
-          return `
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs hover:border-blue-400 transition p-5 flex flex-col justify-between gap-4">
-              <div class="space-y-3.5">
-                <!-- Barra Superior de Tarjeta -->
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-2">
-                    <span class="bg-slate-950 text-amber-400 font-mono-code font-black text-sm px-3 py-1 rounded-lg">${e.folio}</span>
-                    <span class="text-xs font-bold text-slate-500">${e.viaje}</span>
-                    <span class="text-xs bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded">${e.numCajas || 1} caja(s)</span>
-                  </div>
-                  <span class="text-xs font-extrabold px-2.5 py-1 rounded-full border ${statusStyle}">${e.estado}</span>
-                </div>
-
-                <!-- Destinatario Destacado para Entrega en EE. UU. -->
-                <div class="bg-blue-50/70 border border-blue-200/80 rounded-xl p-3.5">
-                  <div class="flex justify-between items-start gap-2">
-                    <div>
-                      <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 block">Para entregar en EE. UU. a:</span>
-                      <h4 class="text-base font-black text-slate-900">${e.destinatario.nombre}</h4>
-                    </div>
-                    <a href="tel:${e.destinatario.tel}" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
-                      <i class="fa-solid fa-phone"></i> Llamar
-                    </a>
-                  </div>
-                  <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-700 font-semibold mt-1.5">
-                    <span><i class="fa-solid fa-mobile-screen text-blue-600 mr-1"></i>${e.destinatario.tel}</span>
-                    <span><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${e.destinatario.ciudad}</span>
-                    ${e.destinatario.direccion ? `<span class="text-slate-500 w-full">${e.destinatario.direccion}</span>` : ''}
-                  </div>
-                </div>
-
-                <!-- Quién Envía y Peso -->
-                <div class="flex justify-between items-center text-xs text-slate-600 px-1">
-                  <span><strong>Envió (MX):</strong> ${e.remitente.nombre} (${e.remitente.tel})</span>
-                  <span class="font-mono-code font-bold text-slate-900">${e.pesoTotalKg.toFixed(2)} kg</span>
-                </div>
-
-                <!-- Lista de Artículos -->
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1">
-                  <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Desglose de contenido:</span>
-                  <div class="flex flex-wrap gap-1.5">
-                    ${e.items.map(i => `
-                      <span class="bg-white text-slate-800 border border-slate-200 px-2 py-0.5 rounded-md text-xs font-semibold">
-                        ${i.cant}x${i.desc} <span class="text-slate-400">(${i.peso}${i.unidad})</span>
-                      </span>
-                    `).join('')}
-                  </div>
-                  ${e.observaciones ? `<p class="text-xs text-amber-800 bg-amber-50 px-2 py-1 rounded mt-1.5 font-medium"><i class="fa-solid fa-circle-info mr-1"></i>${e.observaciones}</p>` : ''}
-                </div>
-              </div>
-
-              <!-- Pie Financiero y Botones de Acción -->
-              <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <span class="text-xs text-slate-500 block">Total Nota: <strong>${this.formatCurrency(e.total)}</strong></span>
-                  ${e.saldo > 0
-                    ? `<span class="text-xs font-black text-rose-600">COBRAR EN ENTREGA: ${this.formatCurrency(e.saldo)} (≈$${(e.saldo / tc).toFixed(2)} USD)</span>`
-                    : `<span class="text-xs font-black text-emerald-600"><i class="fa-solid fa-circle-check mr-1"></i>LIQUIDADO AL 100%</span>`
-                  }
-                </div>
-
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <select onchange="App.updateShipmentStatus('${e.id}', this.value)" class="text-xs border border-slate-300 rounded-lg px-2 py-1.5 font-bold bg-slate-50">
-                    <option value="Recibido en Sucursal" ${e.estado === 'Recibido en Sucursal' ? 'selected' : ''}>Sucursal MX</option>
-                    <option value="En Tránsito a EE. UU." ${e.estado === 'En Tránsito a EE. UU.' ? 'selected' : ''}>En Tránsito USA</option>
-                    <option value="Entregado en EE. UU." ${e.estado === 'Entregado en EE. UU.' ? 'selected' : ''}>Entregado USA</option>
-                  </select>
-                  ${e.saldo > 0 ? `
-                    <button onclick="App.settlePaymentInUSA('${e.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold px-2.5 py-1.5 rounded-lg transition" title="Cobrar saldo y marcar entregado">
-                      <i class="fa-solid fa-check-double mr-1"></i>Liquidar
-                    </button>
-                  ` : ''}
-                  <button onclick="App.editShipment('${e.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-lg transition" title="Editar Nota">
-                    <i class="fa-solid fa-pen"></i>
-                  </button>
-                  <button onclick="App.openPrintModal('${e.id}', 'nota')" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
-                    Nota / QR
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      },
-
-      updateShipmentStatus(shipmentId, newStatus) {
-        const e = this.state.envios.find(item => item.id === shipmentId);
-        if (!e) return;
-        e.estado = newStatus;
-        this.saveState();
-        this.renderUSAShipments();
-        this.notify(`Estado de ${e.folio} actualizado a: ${newStatus}`, 'info');
-      },
-
-      settlePaymentInUSA(shipmentId) {
-        const e = this.state.envios.find(item => item.id === shipmentId);
-        if (!e) return;
-        e.anticipo = e.total;
-        e.saldo = 0;
-        e.estado = 'Entregado en EE. UU.';
-        this.saveState();
-        this.renderUSAShipments();
-        this.notify(`Nota ${e.folio} liquidada y marcada como Entregada en EE. UU.`, 'success');
-      },
-
-      // ===============================================================
-      // DIRECTORIO DE CLIENTES E HISTORIAL DE VIAJES
-      // ===============================================================
-      renderClientsDirectory() {
-        const q = document.getElementById('clientDirectorySearch').value.trim().toLowerCase();
-        const container = document.getElementById('clientsGridContainer');
-
-        const filtered = this.state.clientes.filter(c =>
+      // DIRECTORIO DE CLIENTES
+      renderClientes() {
+        const q = document.getElementById('clientSearchInput').value.trim().toLowerCase();
+        const grid = document.getElementById('clientesGrid');
+        const list = this.state.clientes.filter(c =>
           !q ||
-          c.nombre.toLowerCase().includes(q) ||
-          c.tel.toLowerCase().includes(q) ||
-          c.destinatarios.some(d => d.nombre.toLowerCase().includes(q) || d.ciudad.toLowerCase().includes(q))
+          (c.recibeNombre && c.recibeNombre.toLowerCase().includes(q)) ||
+          (c.enviaNombre && c.enviaNombre.toLowerCase().includes(q))
         );
 
-        if (filtered.length === 0) {
-          container.innerHTML = `
-            <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-slate-200">
-              <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-2xl">
-                <i class="fa-solid fa-address-book"></i>
-              </div>
-              <h3 class="font-black text-slate-800 text-base">Directorio de Clientes en Cero</h3>
-              <p class="text-xs text-slate-500 mt-1">Al registrar tu primera nota de envío, el cliente y sus familiares en EE. UU. se guardarán automáticamente aquí.</p>
-            </div>`;
+        if (list.length === 0) {
+          grid.innerHTML = `<div class="col-span-full bg-white p-10 rounded-2xl text-center text-slate-400 font-bold border border-slate-200">Aún no hay clientes guardados.</div>`;
           return;
         }
 
-        container.innerHTML = filtered.map(c => {
-          const enviosCliente = this.state.envios.filter(e => e.clienteId === c.id);
-          const totalHistorico = enviosCliente.reduce((sum, e) => sum + e.total, 0);
-
+        grid.innerHTML = list.map(c => {
+          const hist = this.state.notas.filter(n => n.clienteId === c.id);
           return `
-            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between gap-4">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex flex-col justify-between gap-3">
               <div>
-                <div class="flex justify-between items-start gap-2">
-                  <div>
-                    <h3 class="font-black text-base text-slate-900">${c.nombre}</h3>
-                    <p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${c.tel} · ${c.origen}</p>
-                  </div>
-                  <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 font-extrabold text-xs px-2.5 py-1 rounded-full">
-                    ${enviosCliente.length} viaje(s)
-                  </span>
-                </div>
-
-                <div class="mt-3.5 pt-3 border-t border-slate-100">
-                  <span class="text-[10px] font-extrabold uppercase text-slate-400 block mb-1.5">Destinatarios frecuentes en EE. UU.:</span>
-                  <div class="space-y-1">
-                    ${c.destinatarios.map(d => `
-                      <div class="text-xs bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200/70 flex justify-between">
-                        <span class="font-bold text-slate-800">${d.nombre}</span>
-                        <span class="text-slate-500">${d.ciudad}</span>
-                      </div>
-                    `).join('')}
-                  </div>
-                </div>
+                <span class="text-[10px] font-black uppercase text-blue-700">Recibe en ${c.recibeDestino || 'EE. UU.'}:</span>
+                <h3 class="font-black text-base text-slate-900">${c.recibeNombre}</h3>
+                <p class="text-xs font-mono-num text-slate-600">Tel USA: ${c.recibeTel || '---'}</p>
+                <p class="text-xs text-slate-500 mt-1"><strong>Envía:</strong> ${c.enviaNombre || '---'} (${c.enviaOrigen || ''})</p>
               </div>
-
-              <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                <span class="text-xs text-slate-500">Acumulado: <strong class="text-slate-800">${this.formatCurrency(totalHistorico)}</strong></span>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="App.openClientModal('${c.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-3 py-2 rounded-xl transition">
-                    Historial
-                  </button>
-                  <button onclick="App.loadClientIntoForm('${c.id}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-3 py-2 rounded-xl transition flex items-center gap-1">
-                    <i class="fa-solid fa-plus"></i> Nuevo Viaje
-                  </button>
-                </div>
+              <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
+                <span class="text-xs font-bold text-slate-500">${hist.length} nota(s) en historial</span>
+                <button onclick="App.startNewTripForClient('${c.id}')" class="bg-blue-800 hover:bg-blue-700 text-white font-black text-xs px-3 py-2 rounded-xl">
+                  + Nuevo Viaje
+                </button>
               </div>
             </div>
           `;
         }).join('');
       },
 
-      openClientModal(clientId) {
-        const client = this.state.clientes.find(c => c.id === clientId);
-        if (!client) return;
-
-        document.getElementById('modalClientTitle').textContent = `${client.nombre} — Tel: ${client.tel}`;
-        document.getElementById('modalBtnNewTrip').onclick = () => {
-          this.closeClientModal();
-          this.loadClientIntoForm(clientId);
-        };
-
-        const envios = this.state.envios.filter(e => e.clienteId === clientId);
-        const list = document.getElementById('modalClientHistoryList');
-
-        if (envios.length === 0) {
-          list.innerHTML = `<p class="text-sm text-slate-500">Sin envíos registrados para este cliente.</p>`;
-        } else {
-          list.innerHTML = envios.map(e => `
-            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-4">
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <span class="bg-slate-950 text-amber-400 font-mono-code font-bold text-xs px-2.5 py-0.5 rounded">${e.folio}</span>
-                  <span class="font-extrabold text-sm text-slate-900">${e.viaje}</span>
-                  <span class="text-xs text-slate-400">${e.fecha}</span>
-                </div>
-                <p class="text-xs text-slate-700"><strong>Recibió en EE. UU.:</strong> ${e.destinatario.nombre} (${e.destinatario.ciudad})</p>
-                <p class="text-xs text-slate-500">Artículos: ${e.items.map(i => `${i.cant}x${i.desc}`).join(', ')}</p>
-              </div>
-              <div class="text-right">
-                <p class="font-mono-code font-black text-sm text-slate-900">${this.formatCurrency(e.total)} <span class="text-xs font-normal text-slate-500">(${e.pesoTotalKg.toFixed(2)} kg)</span></p>
-                <div class="mt-1.5 flex gap-2 justify-end">
-                  <button onclick="App.closeClientModal(); App.openPrintModal('${e.id}', 'nota')" class="text-xs bg-slate-900 text-white font-bold px-2.5 py-1 rounded-lg">Ver Nota</button>
-                </div>
-              </div>
-            </div>
-          `).join('');
-        }
-
-        document.getElementById('clientHistoryModal').classList.remove('hidden');
-      },
-
-      closeClientModal() {
-        document.getElementById('clientHistoryModal').classList.add('hidden');
-      },
-
-      // ===============================================================
-      // MANIFIESTO Y EXPORTACIÓN A EXCEL (CSV)
-      // ===============================================================
-      renderManifestTable() {
-        const fViaje = document.getElementById('manifestFilterViaje').value;
-        const tbody = document.getElementById('manifestTableBody');
-
-        const filtered = this.state.envios.filter(e => fViaje === 'ALL' || e.viaje === fViaje);
-
-        if (filtered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="12" class="py-10 text-center text-slate-400 font-semibold">No hay envíos registrados en el manifiesto.</td></tr>`;
+      // TABLA DE CORTE
+      renderCorte() {
+        const tbody = document.getElementById('corteTableBody');
+        if (this.state.notas.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400 font-bold">Sin notas registradas.</td></tr>`;
           return;
         }
-
-        tbody.innerHTML = filtered.map(e => `
+        tbody.innerHTML = this.state.notas.map(n => `
           <tr class="hover:bg-slate-50">
-            <td class="py-2.5 px-3 font-mono-code font-bold text-slate-900">${e.folio}</td>
-            <td class="py-2.5 px-3"><strong>${e.viaje}</strong><br><span class="text-slate-400">${e.fecha}</span></td>
-            <td class="py-2.5 px-3 font-semibold">${e.remitente.nombre}<br><span class="text-slate-500">${e.remitente.tel}</span></td>
-            <td class="py-2.5 px-3 font-semibold text-blue-900">${e.destinatario.nombre}<br><span class="text-slate-500">${e.destinatario.tel}</span></td>
-            <td class="py-2.5 px-3">${e.destinatario.ciudad}</td>
-            <td class="py-2.5 px-3 max-w-xs truncate">${e.items.map(i => `${i.cant}x${i.desc}`).join(', ')}</td>
-            <td class="py-2.5 px-3 text-right font-mono-code font-bold">${e.pesoTotalKg.toFixed(2)} kg</td>
-            <td class="py-2.5 px-3 text-right font-mono-code font-bold">${this.formatCurrency(e.total)}</td>
-            <td class="py-2.5 px-3 text-right font-mono-code text-emerald-700 font-bold">${this.formatCurrency(e.anticipo)}</td>
-            <td class="py-2.5 px-3 text-right font-mono-code ${e.saldo > 0 ? 'text-rose-600 font-black' : 'text-slate-400'}">${this.formatCurrency(e.saldo)}</td>
-            <td class="py-2.5 px-3 text-center font-bold">${e.estado}</td>
+            <td class="py-2.5 px-3 font-mono-num font-black text-rose-700">${n.folio}</td>
+            <td class="py-2.5 px-3 font-bold">${n.recibeNombre} <span class="text-blue-700">(${n.recibeDestino})</span></td>
+            <td class="py-2.5 px-3 font-mono-num">${n.recibeTel}</td>
+            <td class="py-2.5 px-3">${n.enviaNombre} (${n.enviaOrigen})</td>
+            <td class="py-2.5 px-3">${n.rows.map(r => `${r.cant} ${r.desc} [${r.empaque}]`).join(', ')}</td>
+            <td class="py-2.5 px-3 text-right font-mono-num font-black">${this.fmt(n.total)}</td>
+            <td class="py-2.5 px-3 text-right font-mono-num font-bold text-rose-600">${this.fmt(n.resta)}</td>
             <td class="py-2.5 px-3 text-center">
-              <div class="flex items-center justify-center gap-1">
-                <button onclick="App.openPrintModal('${e.id}', 'nota')" class="p-1.5 text-slate-600 hover:text-blue-600" title="Imprimir Nota"><i class="fa-solid fa-print"></i></button>
-                <button onclick="App.editShipment('${e.id}')" class="p-1.5 text-slate-600 hover:text-amber-600" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                <button onclick="App.deleteShipment('${e.id}')" class="p-1.5 text-slate-600 hover:text-rose-600" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
-              </div>
+              <button onclick="App.openNotaModal('${n.id}')" class="text-blue-700 font-bold mr-2">Ver</button>
+              <button onclick="App.deleteNota('${n.id}')" class="text-rose-600 font-bold">Borrar</button>
             </td>
           </tr>
         `).join('');
       },
 
-      exportManifestCSV() {
-        if (this.state.envios.length === 0) {
-          this.notify('No hay registros para exportar.', 'error');
-          return;
-        }
-        const headers = ['Folio', 'Fecha', 'Viaje', 'Quien Envia', 'Tel Mexico', 'Quien Recibe USA', 'Tel USA', 'Ciudad USA', 'Cajas', 'Contenido', 'Peso KG', 'Total MXN', 'Anticipo MXN', 'Saldo Pendiente MXN', 'Estado'];
-        const rows = this.state.envios.map(e => [
-          e.folio,
-          `"${e.fecha}"`,
-          `"${e.viaje}"`,
-          `"${e.remitente.nombre}"`,
-          `"${e.remitente.tel}"`,
-          `"${e.destinatario.nombre}"`,
-          `"${e.destinatario.tel}"`,
-          `"${e.destinatario.ciudad}"`,
-          e.numCajas || 1,
-          `"${e.items.map(i => `${i.cant}x${i.desc}`).join(' | ')}"`,
-          e.pesoTotalKg.toFixed(2),
-          e.total.toFixed(2),
-          e.anticipo.toFixed(2),
-          e.saldo.toFixed(2),
-          `"${e.estado}"`
-        ]);
-
-        const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Manifiesto_SantoTomas_${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
+      deleteNota(id) {
+        if (!confirm('¿Eliminar esta nota?')) return;
+        this.state.notas = this.state.notas.filter(n => n.id !== id);
+        this.saveDB();
+        this.renderCorte();
       },
 
-      // ===============================================================
-      // GENERADOR DE NOTA OFICIAL Y ETIQUETA ADHESIVA CON QR
-      // ===============================================================
-      openPrintModal(shipmentId, mode = 'nota') {
-        this.currentPrintShipmentId = shipmentId;
-        this.currentPrintMode = mode;
-        this.renderPrintView();
-        document.getElementById('printModal').classList.remove('hidden');
-      },
+      // MODAL CON FORMATO IDÉNTICO AL TALONARIO FÍSICO DE LA FOTO
+      openNotaModal(id) {
+        const n = this.state.notas.find(x => x.id === id);
+        if (!n) return;
+        this.activePrintId = id;
 
-      closePrintModal() {
-        document.getElementById('printModal').classList.add('hidden');
-      },
-
-      setPrintFormat(mode) {
-        this.currentPrintMode = mode;
-        document.getElementById('btnFormatNota').className = mode === 'nota'
-          ? 'bg-amber-500 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5'
-          : 'bg-slate-800 text-slate-300 hover:text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5';
-        document.getElementById('btnFormatEtiqueta').className = mode === 'etiqueta'
-          ? 'bg-amber-500 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5'
-          : 'bg-slate-800 text-slate-300 hover:text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5';
-        this.renderPrintView();
-      },
-
-      renderPrintView() {
-        const e = this.state.envios.find(item => item.id === this.currentPrintShipmentId);
-        if (!e) return;
-
-        const tc = this.state.config.exchangeRate || 19.50;
-        const container = document.getElementById('printContainer');
-        const qrData = encodeURIComponent(`PAQUETERIA SANTO TOMAS | FOLIO: ${e.folio} | RECIBE: ${e.destinatario.nombre} | TEL: ${e.destinatario.tel} | DESTINO: ${e.destinatario.ciudad} | SALDO: $${e.saldo}`);
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${qrData}`;
-
-        if (this.currentPrintMode === 'nota') {
-          container.innerHTML = `
-            <div class="space-y-5 text-slate-900">
-              <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4">
-                <div>
-                  <span class="text-[10px] font-black uppercase tracking-widest text-amber-600 block">Comprobante Oficial de Envío Internacional</span>
-                  <h2 class="text-2xl font-black uppercase tracking-tight">Paquetería Santo Tomás Hueyotlipan</h2>
-                  <p class="text-xs text-slate-600 font-semibold">Santo Tomás Hueyotlipan, Puebla ➔ Estados Unidos</p>
-                  <p class="text-xs font-bold text-slate-800 mt-1">Salida / Viaje: ${e.viaje} · Cajas: ${e.numCajas || 1}</p>
-                </div>
-                <div class="text-right">
-                  <span class="bg-slate-950 text-white font-mono-code font-black text-xl px-3.5 py-1.5 rounded-xl inline-block">${e.folio}</span>
-                  <p class="text-xs text-slate-500 mt-1 font-medium">${e.fecha}</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-300 text-xs">
-                <div>
-                  <p class="font-black text-slate-500 uppercase mb-1">Quién Envía (Remitente México)</p>
-                  <p class="font-black text-sm text-slate-900">${e.remitente.nombre}</p>
-                  <p class="font-semibold text-slate-700">Tel: ${e.remitente.tel}</p>
-                  <p class="text-slate-500">${e.remitente.origen}</p>
-                </div>
-                <div class="border-l border-slate-300 pl-4">
-                  <p class="font-black text-blue-700 uppercase mb-1">Quién Recibe (Destinatario EE. UU.)</p>
-                  <p class="font-black text-sm text-slate-900">${e.destinatario.nombre}</p>
-                  <p class="font-bold text-slate-800">Tel USA: ${e.destinatario.tel}</p>
-                  <p class="font-semibold text-slate-700">${e.destinatario.ciudad}</p>
-                  ${e.destinatario.direccion ? `<p class="text-slate-500">${e.destinatario.direccion}</p>` : ''}
-                </div>
-              </div>
-
+        const area = document.getElementById('printArea');
+        area.innerHTML = `
+          <div class="border-2 border-blue-800 rounded-xl p-4 sm:p-5 space-y-3 text-slate-900">
+            <div class="flex justify-between items-center border-b-2 border-blue-800 pb-3">
               <div>
-                <h4 class="text-[11px] font-black uppercase tracking-wider text-slate-500 mb-2">Desglose de Contenido y Peso</h4>
-                <table class="w-full text-xs border-collapse border border-slate-300">
-                  <thead>
-                    <tr class="bg-slate-100 text-slate-800 border-b border-slate-300">
-                      <th class="py-2 px-2.5 text-center">Cant.</th>
-                      <th class="py-2 px-2.5 text-left">Descripción de Artículo</th>
-                      <th class="py-2 px-2.5 text-left">Categoría</th>
-                      <th class="py-2 px-2.5 text-right">Peso</th>
-                      <th class="py-2 px-2.5 text-right">Tarifa</th>
-                      <th class="py-2 px-2.5 text-right">Importe</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-200">
-                    ${e.items.map(i => `
-                      <tr>
-                        <td class="py-2 px-2.5 text-center font-bold">${i.cant}</td>
-                        <td class="py-2 px-2.5 font-semibold">${i.desc}</td>
-                        <td class="py-2 px-2.5 text-slate-600">${i.cat}</td>
-                        <td class="py-2 px-2.5 text-right font-mono-code">${i.peso}${i.unidad}</td>
-                        <td class="py-2 px-2.5 text-right font-mono-code">${this.formatCurrency(i.precio)}</td>
-                        <td class="py-2 px-2.5 text-right font-mono-code font-bold">${this.formatCurrency(i.importe)}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
+                <h2 class="text-xl font-black text-blue-800 uppercase">PAQUETERÍA "STO. TOMÁS"</h2>
+                <p class="text-xs font-extrabold text-blue-700 uppercase">─── Los Ángeles - Oregon ───</p>
               </div>
+              <div class="border-2 border-blue-800 rounded-lg overflow-hidden text-center">
+                <div class="bg-blue-800 text-white text-[10px] font-black px-3 py-0.5 uppercase">NOTA NO.</div>
+                <div class="font-mono-num font-black text-lg text-rose-700 px-3 py-0.5">${n.folio}</div>
+              </div>
+            </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center pt-2">
-                <div class="sm:col-span-7 flex items-center gap-4">
-                  <img src="${qrUrl}" alt="QR Folio" class="w-24 h-24 border border-slate-300 rounded-lg p-1 shrink-0">
-                  <div class="text-xs space-y-1">
-                    <p class="font-bold text-slate-700 uppercase">Observaciones:</p>
-                    <p class="text-slate-600 italic">${e.observaciones || 'Sin observaciones registradas.'}</p>
-                    <p class="text-[11px] text-slate-400 pt-1">Firma de conformidad del remitente: _______________________</p>
-                  </div>
+            <div class="grid grid-cols-12 gap-2 text-xs sm:text-sm border-b-2 border-blue-800 pb-3">
+              <div class="col-span-8"><strong class="text-blue-900">Nombre:</strong> <span class="font-bold border-b border-blue-300 px-1">${n.recibeNombre}</span></div>
+              <div class="col-span-4"><strong class="text-blue-900">Destino:</strong> <span class="font-bold border-b border-blue-300 px-1">${n.recibeDestino}</span></div>
+              <div class="col-span-5"><strong class="text-blue-900">Teléfono:</strong> <span class="font-mono-num font-bold">${n.recibeTel}</span></div>
+              <div class="col-span-3"><strong class="text-blue-900">Fecha:</strong> <span class="font-bold">${n.fecha}</span></div>
+              <div class="col-span-4"><strong class="text-blue-900">Recibió:</strong> <span class="font-bold uppercase">${n.recibio}</span></div>
+            </div>
+
+            <table class="w-full text-xs sm:text-sm border-collapse">
+              <thead>
+                <tr class="bg-blue-800 text-white font-black uppercase">
+                  <th class="py-1.5 px-2 w-20 text-center border-r border-blue-400">CANTIDAD</th>
+                  <th class="py-1.5 px-2 text-left border-r border-blue-400">DESCRIPCIÓN</th>
+                  <th class="py-1.5 px-2 w-24 text-right">IMPORTE</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${n.rows.map(r => `
+                  <tr class="border-b border-dotted border-blue-300">
+                    <td class="py-1.5 px-2 text-center font-mono-num font-bold border-r border-blue-300">${r.cant}</td>
+                    <td class="py-1.5 px-2 font-bold border-r border-blue-300 flex justify-between">
+                      <span>${r.desc}</span>
+                      <span class="font-mono-num text-blue-900">${r.empaque}</span>
+                    </td>
+                    <td class="py-1.5 px-2 text-right font-mono-num font-bold">${r.importe}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="grid grid-cols-12 gap-3 pt-3 border-t-2 border-blue-800 items-center text-xs">
+              <div class="col-span-7 border border-blue-800 rounded-lg p-2.5 space-y-1">
+                <div><strong class="text-blue-900">Envía:</strong> <span class="font-bold">${n.enviaNombre}</span></div>
+                <div><strong class="text-blue-900">Teléfono:</strong> <span class="font-mono-num font-bold">${n.enviaTel}</span></div>
+                <div><strong class="text-blue-900">Origen:</strong> <span class="font-bold">${n.enviaOrigen}</span></div>
+              </div>
+              <div class="col-span-5 space-y-1 text-right">
+                <div class="border-2 border-blue-800 rounded-lg p-2 flex justify-between items-center">
+                  <span class="font-black text-blue-900 text-sm">TOTAL $</span>
+                  <span class="font-mono-num font-black text-xl">${this.fmt(n.total)}</span>
                 </div>
-
-                <div class="sm:col-span-5 bg-slate-50 p-4 rounded-xl border border-slate-300 space-y-1.5 text-xs">
-                  <div class="flex justify-between">
-                    <span class="text-slate-600">Peso Total Báscula:</span>
-                    <strong class="font-mono-code">${e.pesoTotalKg.toFixed(2)} kg</strong>
-                  </div>
-                  ${e.cargoExtra > 0 ? `
-                    <div class="flex justify-between">
-                      <span class="text-slate-600">Cargo Extra / Emplaye:</span>
-                      <strong class="font-mono-code">${this.formatCurrency(e.cargoExtra)}</strong>
-                    </div>
-                  ` : ''}
-                  <div class="flex justify-between text-sm font-black text-slate-900 pt-1 border-t border-slate-200">
-                    <span>Total del Envío:</span>
-                    <span class="font-mono-code">${this.formatCurrency(e.total)}</span>
-                  </div>
-                  <div class="flex justify-between text-emerald-700 font-bold">
-                    <span>Pagado / Anticipo (${e.metodoPago}):</span>
-                    <span class="font-mono-code">${this.formatCurrency(e.anticipo)}</span>
-                  </div>
-                  <div class="flex justify-between text-base font-black text-rose-600 pt-1 border-t border-slate-300">
-                    <span>Saldo por Cobrar:</span>
-                    <span class="font-mono-code">${this.formatCurrency(e.saldo)}</span>
-                  </div>
-                  ${e.saldo > 0 ? `<p class="text-[11px] text-right font-mono-code text-slate-500">Equivalente en EE. UU.: ≈ $${(e.saldo / tc).toFixed(2)} USD</p>` : ''}
+                ${n.resta > 0 ? `<div class="text-rose-600 font-black">Resta por cobrar: ${this.fmt(n.resta)}</div>` : `<div class="text-emerald-700 font-black">PAGADO COMPLETO</div>`}
+                <div class="text-[10px] font-bold text-blue-900 pt-1">
+                  Tel. USA: 323 448 6554 | Tel. MEX: 224 100 1849
                 </div>
               </div>
             </div>
-          `;
-        } else {
-          // Modo Etiqueta Adhesiva para Caja
-          container.innerHTML = `
-            <div class="border-4 border-slate-950 rounded-2xl p-6 max-w-xl mx-auto space-y-4 text-slate-950">
-              <div class="flex justify-between items-center border-b-4 border-slate-950 pb-3">
-                <div>
-                  <p class="text-xs font-black uppercase tracking-widest">PAQUETERÍA SANTO TOMÁS HUEYOTLIPAN</p>
-                  <p class="text-sm font-bold text-slate-600">${e.viaje} · Caja 1 de ${e.numCajas || 1}</p>
-                </div>
-                <span class="bg-slate-950 text-white font-mono-code font-black text-3xl px-4 py-2 rounded-xl">${e.folio}</span>
-              </div>
+          </div>
+        `;
 
-              <div class="bg-slate-100 p-4 rounded-xl border-2 border-slate-900">
-                <p class="text-xs font-black uppercase text-slate-500">ENTREGAR EN ESTADOS UNIDOS A:</p>
-                <p class="text-2xl font-black uppercase tracking-tight mt-0.5">${e.destinatario.nombre}</p>
-                <p class="text-xl font-mono-code font-black text-blue-900 mt-1"><i class="fa-solid fa-phone mr-2"></i>${e.destinatario.tel}</p>
-                <p class="text-base font-extrabold mt-1">${e.destinatario.ciudad}</p>
-                ${e.destinatario.direccion ? `<p class="text-xs font-semibold text-slate-700">${e.destinatario.direccion}</p>` : ''}
-              </div>
-
-              <div class="grid grid-cols-3 gap-3 items-center">
-                <div class="col-span-2 space-y-2 text-xs">
-                  <p><strong>REMITENTE (MX):</strong> ${e.remitente.nombre} (${e.remitente.tel})</p>
-                  <p><strong>PESO TOTAL:</strong> <span class="font-mono-code font-black text-base">${e.pesoTotalKg.toFixed(2)} KG</span></p>
-                  <p><strong>CONTENIDO:</strong> ${e.items.map(i => `${i.cant}x${i.desc}`).join(', ')}</p>
-                  <div class="p-2 rounded-lg border-2 ${e.saldo > 0 ? 'border-rose-600 bg-rose-50 text-rose-800' : 'border-emerald-600 bg-emerald-50 text-emerald-800'} font-black text-sm text-center">
-                    ${e.saldo > 0 ? `COBRAR AL ENTREGAR: ${this.formatCurrency(e.saldo)} (≈$${(e.saldo / tc).toFixed(2)} USD)` : 'PAGADO COMPLETO - ENTREGAR SIN COBRO'}
-                  </div>
-                </div>
-                <div class="flex flex-col items-center justify-center">
-                  <img src="${qrUrl}" alt="QR Caja" class="w-32 h-32 border-2 border-slate-900 rounded-lg p-1">
-                  <span class="text-[10px] font-mono-code font-bold mt-1">${e.folio}</span>
-                </div>
-              </div>
-            </div>
-          `;
-        }
+        document.getElementById('notaModal').classList.remove('hidden');
       },
 
-      shareViaWhatsApp() {
-        const e = this.state.envios.find(item => item.id === this.currentPrintShipmentId);
-        if (!e) return;
-        const tc = this.state.config.exchangeRate || 19.50;
-        const msg = [
-          `*PAQUETERÍA SANTO TOMÁS HUEYOTLIPAN*`,
-          `📦 *Folio de Nota:* ${e.folio}`,
-          `🛫 *Salida:* ${e.viaje}`,
-          `👤 *Envía (MX):* ${e.remitente.nombre}`,
-          `🇺🇸 *Recibe (EE. UU.):* ${e.destinatario.nombre}`,
-          `📍 *Destino:* ${e.destinatario.ciudad}`,
-          `⚖️ *Peso Total:* ${e.pesoTotalKg.toFixed(2)} kg`,
-          `📋 *Contenido:* ${e.items.map(i => `${i.cant}x${i.desc}`).join(', ')}`,
-          `💰 *Total:* ${this.formatCurrency(e.total)}`,
-          `✅ *Pagado:* ${this.formatCurrency(e.anticipo)}`,
-          e.saldo > 0
-            ? `❗ *Saldo por pagar en EE. UU.:* ${this.formatCurrency(e.saldo)} (≈ $${(e.saldo / tc).toFixed(2)} USD)`
-            : `🎉 *Estado de Cuenta:* PAGADO AL 100%`
-        ].join('\n');
+      closeModal() {
+        document.getElementById('notaModal').classList.add('hidden');
+      },
 
+      sendWhatsApp() {
+        const n = this.state.notas.find(x => x.id === this.activePrintId);
+        if (!n) return;
+        const msg = [
+          `*PAQUETERÍA "STO. TOMÁS" (Los Ángeles - Oregon)*`,
+          `🧾 *NOTA NO.:* ${n.folio} (${n.fecha})`,
+          `👤 *Nombre (Recibe):* ${n.recibeNombre}`,
+          `📍 *Destino:* ${n.recibeDestino} | *Tel:* ${n.recibeTel}`,
+          `📦 *Contenido:*`,
+          ...n.rows.map(r => `  • ${r.cant} ${r.desc} (${r.empaque}) — $${r.importe}`),
+          `📤 *Envía:* ${n.enviaNombre} (${n.enviaOrigen})`,
+          `💰 *TOTAL:* ${this.fmt(n.total)}`,
+          n.resta > 0 ? `❗ *Resta por cobrar:* ${this.fmt(n.resta)}` : `✅ *PAGADO*`
+        ].join('\n');
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
       },
 
-      // ===============================================================
-      // RESPALDO, IMPORTACIÓN Y REINICIO EN CERO
-      // ===============================================================
-      exportDatabase() {
-        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state, null, 2));
-        const a = document.createElement('a');
-        a.setAttribute('href', dataStr);
-        a.setAttribute('download', `BaseDatos_SantoTomas_${new Date().toISOString().slice(0, 10)}.json`);
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        this.notify('Archivo de respaldo descargado.', 'success');
-      },
-
-      importDatabase(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          try {
-            const parsed = JSON.parse(ev.target.result);
-            if (parsed && Array.isArray(parsed.envios) && Array.isArray(parsed.clientes)) {
-              this.state = parsed;
-              this.saveState();
-              this.resetCaptureForm();
-              this.renderUSAShipments();
-              this.renderClientsDirectory();
-              this.renderManifestTable();
-              this.notify('Base de datos restaurada con éxito.', 'success');
-            }
-          } catch (err) {
-            this.notify('El archivo seleccionado no es válido.', 'error');
+      switchTab(tab) {
+        ['nota', 'usa', 'clientes', 'corte'].forEach(t => {
+          document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+          const dBtn = document.getElementById(`nav-${t}`);
+          if (dBtn) {
+            dBtn.className = t === tab
+              ? 'px-3.5 py-2 rounded-lg text-xs font-black transition flex items-center gap-1.5 bg-white text-blue-900 shadow'
+              : 'px-3.5 py-2 rounded-lg text-xs font-bold text-blue-200 hover:text-white transition flex items-center gap-1.5';
           }
-        };
-        reader.readAsText(file);
-      },
-
-      clearAllDatabase() {
-        if (!confirm('¿Deseas dejar el sistema completamente en CERO (0 envíos, $0.00 de saldo y 0 clientes)?')) return;
-        this.state = {
-          config: {
-            nextFolio: 1001,
-            currentViaje: 'Viaje General',
-            exchangeRate: 19.50,
-            defaultRateKg: 180
-          },
-          clientes: [],
-          envios: []
-        };
-        this.saveState();
-        this.resetCaptureForm();
-        this.renderUSAShipments();
-        this.renderClientsDirectory();
-        this.renderManifestTable();
-        this.notify('Sistema reiniciado completamente en cero.', 'info');
-      },
-
-      // ===============================================================
-      // UTILIDADES DE FORMATO Y NOTIFICACIONES
-      // ===============================================================
-      formatCurrency(val) {
-        return '$' + (Number(val) || 0).toLocaleString('es-MX', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
+          const mBtn = document.getElementById(`mnav-${t}`);
+          if (mBtn) {
+            mBtn.className = t === tab
+              ? 'py-2.5 flex flex-col items-center justify-center text-[11px] font-black text-amber-400 bg-blue-900/60'
+              : 'py-2.5 flex flex-col items-center justify-center text-[11px] font-semibold text-blue-200';
+          }
         });
+
+        if (tab === 'usa') this.renderUSANotas();
+        if (tab === 'clientes') this.renderClientes();
+        if (tab === 'corte') this.renderCorte();
       },
 
-      notify(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const colors = {
-          success: 'bg-emerald-600 text-white',
-          error: 'bg-rose-600 text-white',
-          info: 'bg-slate-900 text-amber-400 border border-slate-700'
+      updateStats() {
+        const notas = this.state.notas;
+        document.getElementById('statNotas').textContent = notas.length;
+        document.getElementById('statTotal').textContent = this.fmt(notas.reduce((s, n) => s + (Number(n.total) || 0), 0));
+        document.getElementById('statPagado').textContent = this.fmt(notas.reduce((s, n) => s + (Number(n.anticipo) || 0), 0));
+        document.getElementById('statPendiente').textContent = this.fmt(notas.reduce((s, n) => s + (Number(n.resta) || 0), 0));
+      },
+
+      exportCSV() {
+        if (this.state.notas.length === 0) return;
+        const rows = this.state.notas.map(n =>
+          `${n.folio},"${n.fecha}","${n.recibeNombre}","${n.recibeDestino}","${n.recibeTel}","${n.enviaNombre}","${n.enviaOrigen}",${n.total},${n.resta}`
+        );
+        const csv = '\uFEFF' + ['Nota_No,Fecha,Nombre_Recibe,Destino,Tel_USA,Envia,Origen,Total,Resta', ...rows].join('\n');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+        a.download = 'Notas_Paqueteria_StoTomas.csv';
+        a.click();
+      },
+
+      exportBackup() {
+        const a = document.createElement('a');
+        a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state, null, 2));
+        a.download = 'Respaldo_Paqueteria_StoTomas.json';
+        a.click();
+      },
+
+      importBackup(ev) {
+        const f = ev.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (e) => {
+          try {
+            this.state = JSON.parse(e.target.result);
+            this.saveDB();
+            this.clearNotaForm();
+            this.toast('Respaldo cargado con éxito');
+          } catch (err) { this.toast('Archivo no válido', 'error'); }
         };
-        const toast = document.createElement('div');
-        toast.className = `${colors[type] || colors.info} px-4 py-3 rounded-xl shadow-xl text-xs font-extrabold flex items-center gap-2 transition-all duration-300`;
-        toast.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          setTimeout(() => toast.remove(), 300);
-        }, 3200);
+        r.readAsText(f);
+      },
+
+      resetAllZero() {
+        if (!confirm('¿Dejar todo el sistema en CERO (0 notas y $0)?')) return;
+        this.state = { nextFolio: 1500, ultimoRecibio: 'OSCAR', clientes: [], notas: [] };
+        this.saveDB();
+        this.clearNotaForm();
+        this.toast('Sistema reiniciado en CERO');
+      },
+
+      fmt(v) {
+        return '$' + (Number(v) || 0).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      },
+
+      toast(msg, type = 'ok') {
+        const box = document.getElementById('toastBox');
+        const el = document.createElement('div');
+        el.className = `${type === 'error' ? 'bg-rose-600' : 'bg-blue-950 border border-amber-400'} text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-extrabold`;
+        el.textContent = msg;
+        box.appendChild(el);
+        setTimeout(() => el.remove(), 2800);
       }
     };
 
